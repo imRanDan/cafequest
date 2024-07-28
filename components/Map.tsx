@@ -8,7 +8,7 @@ const containerStyle = {
 
 const defaultCenter = {
     lat: 43.201308,
-    lng: -90.0045131
+    lng: -80.0045131
 };
 
 interface MapProps {
@@ -17,7 +17,11 @@ interface MapProps {
 
 const Map: React.FC<MapProps>  = ({ cafes }) => {
     return (
-        <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+        <LoadScript 
+            googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
+            loadingElement={<div>Loading...</div>}
+            libraries={['places']}
+            >
             <GoogleMap mapContainerStyle={containerStyle} center={defaultCenter} zoom={10}>
                 {cafes.map(cafe =>
                     <Marker key={cafe.place_id} position={cafe.geometry.location} />
