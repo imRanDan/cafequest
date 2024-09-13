@@ -1,10 +1,12 @@
-import { Flex, Text } from '@chakra-ui/react'
+import { Flex, Heading, Text } from '@chakra-ui/react'
 import React from 'react'
 
 const Header = () => {
   return (
-    <Flex justifyContent={"center"}>
-        <Text>Hello</Text>
+    <Flex justifyContent={"center"} alignItems={"center"}>
+        <Heading>
+            Welcome to CafeQuest
+        </Heading>
     </Flex>
   )
 }
