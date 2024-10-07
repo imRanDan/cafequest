@@ -11,7 +11,6 @@ export default function Home() {
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
             <Center display={"flex"} flexDir={"column"}>
                 <Text size={"lg"}>Welcome to CafeQuest</Text>
-                <Input placeholder="enter location here" width={"300px"} height={"30px"}/>
             </Center>
 
             <MapProvider>
