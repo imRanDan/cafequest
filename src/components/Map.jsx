@@ -38,6 +38,7 @@ const MapComponent = () => {
     const mapRef = useRef(null);   // Ref for the Google Map instance
     const [selectedLocation, setSelectedLocation] = useState(null); // State to store selected location
     const [userLocation, setUserLocation] = useState(null);
+    const [cafes, setCafes] = useState([]);
 
     useEffect(() => {
         // Asks for users location on initial load
@@ -63,22 +64,46 @@ const MapComponent = () => {
 
     useEffect(() => {
         if (isLoaded) {
-            const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current);
-            autocomplete.addListener('place_changed', () => {
-                const place = autocomplete.getPlace();
-                if (place.geometry && mapRef.current) {
-                    // Set the selected location and pan the map
-                    const location = {
-                        lat: place.geometry.location.lat(),
-                        lng: place.geometry.location.lng(),
-                    };
-                    setSelectedLocation(location); // Update state with selected location
-                    mapRef.current.panTo(location); // Recenter map
-                    mapRef.current.setZoom(15); // Adjust zoom level
+
+        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current);
+                autocomplete.addListener('place_changed', () => {
+                    const place = autocomplete.getPlace();
+                    if (place.geometry && mapRef.current) {
+                        // Set the selected location and pan the map
+                        const location = {
+                            lat: place.geometry.location.lat(),
+                            lng: place.geometry.location.lng(),
+                        };
+                        setSelectedLocation(location); // Update state with selected location
+                        mapRef.current.panTo(location); // Recenter map
+                        mapRef.current.setZoom(15); // Adjust zoom level
+                     }
+                });
+            }
+            }), [isLoaded]
+
+    useEffect(() => {
+        const locationToSearch = selectedLocation || userLocation;
+
+        if (isLoaded && mapRef.current && locationToSearch) {
+            const service = new window.google.maps.places.PlacesService(mapRef.current);
+
+            const request = {
+                location: locationToSearch,
+                radius: 5000, //a 5km radius
+                type: 'cafe',
+            };
+
+            service.nearbySearch(request, (results, status) => {
+                if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+                    setCafes(results);
+                } else {
+                    console.error("Error fetching nearby cafes", status);
                 }
             });
         }
-    }, [isLoaded]);
+    }, [isLoaded, selectedLocation, userLocation]);
+            
 
     if (loadError) return <div>Error loading maps</div>;
     if (!isLoaded) return <div>Loading Maps...</div>;
@@ -94,7 +119,7 @@ const MapComponent = () => {
 
             <GoogleMap
                 mapContainerStyle={defaultMapContainerStyle}
-                center={ userLocation || defaultMapCenter}
+                center={ selectedLocation || userLocation || defaultMapCenter}
                 zoom={defaultMapZoom}
                 options={defaultMapOptions}
                 onLoad={(map) => {
@@ -105,10 +130,23 @@ const MapComponent = () => {
                     }
                 }}
             >
-                {/* Conditionally render the Marker if a location is selected */}
+
+                {/* Marker for nearby cafes */}
+                {cafes.map((cafe, index)=> (
+                    <Marker 
+                        key={index} 
+                        position={{
+                            lat: cafe.geometry.location.lat(),
+                            lng: cafe.geometry.location.lng(),
+                        }}
+                        title={cafe.name} 
+                    />
+                ))}
+
                 {selectedLocation && (
                     <Marker position={selectedLocation} />
                 )}
+
                 {userLocation && !selectedLocation && (
                     <Marker position={userLocation} />
                 )}
