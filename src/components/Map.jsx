@@ -1,7 +1,8 @@
 'use client';
 
-import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, Marker, InfoWindow } from "@react-google-maps/api";
 import { useRef, useEffect, useState } from 'react';
+import '../styles/globals.css';
 
 // Map's styling
 export const defaultMapContainerStyle = {
@@ -39,6 +40,7 @@ const MapComponent = () => {
     const [selectedLocation, setSelectedLocation] = useState(null); // State to store selected location
     const [userLocation, setUserLocation] = useState(null);
     const [cafes, setCafes] = useState([]);
+    const [selectedCafe, setSelectedCafe] = useState(null);
 
     useEffect(() => {
         // Asks for users location on initial load
@@ -92,6 +94,7 @@ const MapComponent = () => {
                 location: locationToSearch,
                 radius: 5000, //a 5km radius
                 type: 'cafe',
+                keyword: 'local independent coffee'
             };
 
             service.nearbySearch(request, (results, status) => {
@@ -102,7 +105,11 @@ const MapComponent = () => {
                 }
             });
         }
-    }, [isLoaded, selectedLocation, userLocation]);
+    }, [isLoaded, selectedLocation]);
+
+    const handleMarkerClick = (cafe) => {
+        setSelectedCafe(cafe);
+    }
             
 
     if (loadError) return <div>Error loading maps</div>;
@@ -140,6 +147,7 @@ const MapComponent = () => {
                             lng: cafe.geometry.location.lng(),
                         }}
                         title={cafe.name} 
+                        onClick={() => handleMarkerClick(cafe)} //set selected cafe on marker through click
                     />
                 ))}
 
@@ -149,6 +157,23 @@ const MapComponent = () => {
 
                 {userLocation && !selectedLocation && (
                     <Marker position={userLocation} />
+                )}
+
+                {/* InfoWindow section to display cafe details */}
+                {selectedCafe && (
+                    <InfoWindow
+                        position={{
+                            lat: selectedCafe.geometry.location.lat(),
+                            lng: selectedCafe.geometry.location.lng(),
+                        }}
+                        onCloseClick={() => setSelectedCafe(null)} //Clears selected cafe
+                >
+                    <div className="info-window-content">
+                        <h2>{selectedCafe.name}</h2>
+                        <p>Rating: {selectedCafe.rating ? selectedCafe.rating : 'N/A'}</p>
+                        <p>{selectedCafe.vicinity}</p> {/* this displays the cafes address */}
+                    </div>
+                </InfoWindow>
                 )}
             </GoogleMap>
         </div>
