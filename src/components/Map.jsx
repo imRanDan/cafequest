@@ -37,6 +37,29 @@ const MapComponent = () => {
     const inputRef = useRef(null); // Ref for the autocomplete input
     const mapRef = useRef(null);   // Ref for the Google Map instance
     const [selectedLocation, setSelectedLocation] = useState(null); // State to store selected location
+    const [userLocation, setUserLocation] = useState(null);
+
+    useEffect(() => {
+        // Asks for users location on initial load
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userPos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    };
+                    setUserLocation(userPos)
+                    if (mapRef.current) {
+                        mapRef.current.panTo(userPos)
+                        mapRef.current.setZoom(15)
+                    }
+                },
+                () => {
+                    console.error("Gelocation permission denied")
+                }
+            )
+        }
+    }, [isLoaded]);
 
     useEffect(() => {
         if (isLoaded) {
@@ -71,16 +94,23 @@ const MapComponent = () => {
 
             <GoogleMap
                 mapContainerStyle={defaultMapContainerStyle}
-                center={defaultMapCenter}
+                center={ userLocation || defaultMapCenter}
                 zoom={defaultMapZoom}
                 options={defaultMapOptions}
                 onLoad={(map) => {
                     mapRef.current = map; // Store the map instance
+                    if (userLocation) {
+                        map.panTo(userLocation);
+                        map.setZoom(15);
+                    }
                 }}
             >
                 {/* Conditionally render the Marker if a location is selected */}
                 {selectedLocation && (
                     <Marker position={selectedLocation} />
+                )}
+                {userLocation && !selectedLocation && (
+                    <Marker position={userLocation} />
                 )}
             </GoogleMap>
         </div>
