@@ -5,12 +5,12 @@ CafeQuest is a web application that allows users to discover, review, and rate l
 
 This project showcases full-stack development using modern web technologies and focuses on creating a user-friendly interface while providing a scalable backend for storing cafe data and user reviews.
 
-## Features
-- **Cafe Discovery**: Search for cafes by location, rating, and features (e.g., Wi-Fi, pet-friendly).
-- **User Reviews & Ratings**: Users can leave reviews, give star ratings, and upload photos.
-- **User Authentication**: Register, log in, and manage user profiles.
-- **Interactive Map**: View cafes on a map using geolocation.
-- **Favorites**: Users can save cafes to their favorites for easy access.
+## Features (in progress)
+- **Cafe Discovery**: Search for cafes by location, rating, and features (e.g., Wi-Fi, pet-friendly).(BASICS DONE)
+- **User Reviews & Ratings**: Users can leave reviews, give star ratings, and upload photos. (IN PROGRESS)
+- **User Authentication**: Register, log in, and manage user profiles. (IN PROGRESS)
+- **Interactive Map**: View cafes on a map using geolocation. (DONE)
+- **Favorites**: Users can save cafes to their favorites for easy access. (IN PROGRESS)
 
 ## Technologies Used
 - **Frontend**: React.js, HTML5, CSS3, JavaScript
