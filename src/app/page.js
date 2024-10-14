@@ -10,7 +10,7 @@ export default function Home() {
         <div>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
             <Center display={"flex"} flexDir={"column"}>
-                <Text size={"lg"}>Welcome to CafeQuest</Text>
+                <Text size={"lg"}>Welcome to CafeQuest ☕</Text>
             </Center>
 
             <MapProvider>

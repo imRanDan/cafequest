@@ -105,7 +105,7 @@ const MapComponent = () => {
                 }
             });
         }
-    }, [isLoaded, selectedLocation]);
+    }, [isLoaded, selectedLocation, userLocation]);
 
     const handleMarkerClick = (cafe) => {
         setSelectedCafe(cafe);

@@ -5,7 +5,7 @@ const Header = () => {
   return (
     <Flex justifyContent={"center"} alignItems={"center"}>
         <Heading>
-            Welcome to CafeQuest
+            Welcome to CafeQuest ☕
         </Heading>
     </Flex>
   )
