@@ -1,19 +1,1 @@
-.info-window-content {
-    color: #333;
-    background-color: #fff;
-    padding: 10px;
-    border-radius: 5px;
-    font-family: 'Arial, sans-serif';
-}
 
-.info-window-content h2 {
-    color: #2c3e50;
-}
-
-.info-window-content p {
-    color: #8e44ad;
-}
-
-.info-window-content p:last-child {
-    color: #16a085;
-}
