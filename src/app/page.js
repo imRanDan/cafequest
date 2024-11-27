@@ -1,4 +1,7 @@
 // `app/page.js` is the homepage
+
+"use client";
+import { useState } from "react";
 import { Center, ColorModeScript, Flex, Input, Text } from "@chakra-ui/react";
 import theme from "./theme";
 import Map from "@/components/Map";
@@ -6,6 +9,8 @@ import Head from "next/head";
 import SearchBar from "@/components/SearchBar";
 
 export default function Home() {
+  const [userLocation, setUserLocation] = useState(null); //this is the state for the users location
+
   return (
     <div>
       <Head>
@@ -20,8 +25,8 @@ export default function Home() {
       <Center display={"flex"} flexDir={"column"}>
         <Text size={"lg"}>Welcome to CafeQuest ☕</Text>
       </Center>
-      <SearchBar />
-      <Map />
+      <SearchBar setUserLocation={setUserLocation} />
+      <Map userLocation={userLocation} />
     </div>
   );
 }
