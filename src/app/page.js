@@ -3,6 +3,7 @@ import { Center, ColorModeScript, Flex, Input, Text } from "@chakra-ui/react";
 import theme from "./theme";
 import Map from "@/components/Map";
 import Head from "next/head";
+import SearchBar from "@/components/SearchBar";
 
 export default function Home() {
   return (
@@ -19,7 +20,7 @@ export default function Home() {
       <Center display={"flex"} flexDir={"column"}>
         <Text size={"lg"}>Welcome to CafeQuest ☕</Text>
       </Center>
-
+      <SearchBar />
       <Map />
     </div>
   );
