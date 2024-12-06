@@ -7,6 +7,7 @@ import theme from "./theme";
 import Map from "@/components/Map";
 import Head from "next/head";
 import SearchBar from "@/components/SearchBar";
+import SearchButton from "@/components/SearchButton";
 
 export default function Home() {
   const [userLocation, setUserLocation] = useState(null); //this is the state for the users location
@@ -27,6 +28,7 @@ export default function Home() {
       </Center>
       <SearchBar setUserLocation={setUserLocation} />
       <Map userLocation={userLocation} />
+      <SearchButton />
     </div>
   );
 }
