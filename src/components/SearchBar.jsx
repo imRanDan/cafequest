@@ -1,61 +1,59 @@
-"use client";
 import { useState } from "react";
+import axios from "axios";
+import { Input, Button, Stack } from "@chakra-ui/react";
 
-const SearchBar = ({ setUserLocation }) => {
-  const [error, setError] = useState(null);
+export default function SearchBar({ setUserLocation, setSearchResults }) {
+  const [location, setLocation] = useState("");
 
-  const handleSearchClick = () => {
-    const nudgeTimeoutId = setTimeout(() => {
-      console.log("Please allow location access for better results.");
-    }, 5000);
-
-    const geoSuccess = (position) => {
-      clearTimeout(nudgeTimeoutId); // Stop the nudge message
-      // Update location in the parent component
-      setUserLocation([position.coords.latitude, position.coords.longitude]);
-      setError(null);
-    };
-
-    const geoError = (error) => {
-      clearTimeout(nudgeTimeoutId);
-      switch (error.code) {
-        case error.TIMEOUT:
-          console.error("Location request timed out.");
-          setError("Location request timed out.");
-          break;
-        case error.PERMISSION_DENIED:
-          console.error("Location permission denied.");
-          setError("Location permission denied.");
-          break;
-        case error.POSITION_UNAVAILABLE:
-          console.error("Location unavailable.");
-          setError("Location unavailable.");
-          break;
-        default:
-          console.error("An unknown error occurred.");
-          setError("An unknown error occurred.");
+  const handleSearch = async () => {
+    if (location) {
+      // Geocode the location to get latitude and longitude
+      try {
+        const response = await axios.get(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${location}`
+        );
+        const { lat, lon } = response.data[0];
+        setUserLocation({ lat, lon }); // Update the user location with the new lat/lon
+        fetchCafes(lat, lon); // Search for cafes based on the new location
+      } catch (error) {
+        console.error("Error fetching location data:", error);
       }
-    };
+    }
+  };
 
-    // Prompt for user's location
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
-    } else {
-      setError("Geolocation is not supported by your browser.");
+  const fetchCafes = async (latitude, longitude) => {
+    const query = `
+      [out:json];
+      (
+        node["amenity"="cafe"](around:1000, ${latitude}, ${longitude});
+        way["amenity"="cafe"](around:1000, ${latitude}, ${longitude});
+        relation["amenity"="cafe"](around:1000, ${latitude}, ${longitude});
+      );
+      out center;
+    `;
+    const url = "https://overpass-api.de/api/interpreter";
+    try {
+      const response = await axios.post(url, query);
+      const cafes = response.data.elements.filter(
+        (cafe) => cafe.lat && cafe.lon
+      ); // Filter out invalid cafes
+      setSearchResults(cafes); // Set the search results with valid cafes
+    } catch (error) {
+      console.error("Error fetching cafes:", error);
     }
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        placeholder="Search for cafes here!"
-        onFocus={handleSearchClick} // Triggers on focus
-        style={{ width: "100%", height: "2em" }}
+    <Stack spacing={4} direction="row" align="center">
+      <Input
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        placeholder="Enter location (city, address)"
+        size="md"
       />
-      {error && <p style={{ color: "red" }}>{error}</p>}
-    </div>
+      <Button onClick={handleSearch} colorScheme="teal" size="md">
+        Search Cafes
+      </Button>
+    </Stack>
   );
-};
-
-export default SearchBar;
+}
