@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Center, ColorModeScript, Flex, Text } from "@chakra-ui/react";
 import theme from "./theme";
-const Map = dynamic(() => import("../components/Map"), { ssr: false });
+const Map = dynamic(() => import("../components/Map"), { ssr: false }); // turn this back into regular import when in dev/coding mode
 import Head from "next/head";
 import SearchBar from "@/components/SearchBar";
 
