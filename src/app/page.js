@@ -1,8 +1,10 @@
-"use client";
+"use client"; // Add this directive to indicate that this component uses client-side rendering.
+
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Center, ColorModeScript, Flex, Text } from "@chakra-ui/react";
 import theme from "./theme";
-import Map from "@/components/Map";
+const Map = dynamic(() => import("../components/Map"), { ssr: false });
 import Head from "next/head";
 import SearchBar from "@/components/SearchBar";
 

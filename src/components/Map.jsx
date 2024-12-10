@@ -30,7 +30,9 @@ export default function Map({ userLocation, results }) {
     <MapContainer
       center={[lat, lon]}
       zoom={13}
-      style={{ width: "100%", height: "400px" }}
+      width={"100%"}
+      height={"400px"}
+      style={{ width: "100%", height: "600px" }}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
