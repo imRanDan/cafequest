@@ -168,29 +168,35 @@ export const Features = () => {
                 meeting up with friends, or on a date, we'll guide you to your
                 next perfect spot.{" "}
               </FeatureCard>
-              <FeatureCard title="Unify your payments stack">
-                Manage all your online and offline sales in one place with a
-                single integration, simplifying reporting and reconciliation.
+              <FeatureCard title="Seamless Search Experience">
+                With CafeQuest, discovering your next cafe is effortless. Filter
+                by location, ambiance, or offerings to find exactly what you're
+                looking for, anytime and anywhere.
               </FeatureCard>
-              <FeatureCard title="Own your in-store experience">
+              <FeatureCard title="Cafe Recommendations">
                 {" "}
-                Provide a seamless customer experience across channels, like
-                reserving online and picking up in store.
+                CafeQuest learns your preferences to offer personalized
+                recommendations. From cozy hideaways to trendy spots, find cafes
+                that match your vibe and get exactly what you're craving.
               </FeatureCard>
-              <FeatureCard title="Grow your platform’s revenue">
+              <FeatureCard title="Save and Share Your Favorites">
                 {" "}
-                Add in-person payments to your platform or marketplace. Using
-                Terminal with Connect.{" "}
+                Found a cafe you love? Save it to your personal list, share it
+                with friends, or come back whenever you need a new spot.
+                CafeQuest makes sure your favorite cafes are always at your
+                fingertips.{" "}
               </FeatureCard>
-              <FeatureCard title="Clear overview for efficient tracking">
+              <FeatureCard title="Explore New Cafes">
                 {" "}
-                Handle your subscriptions and transactions efficiently with the
-                clear overview in Dashboard. Fea
+                CafeQuest makes discovering new cafes easy. Break out of your
+                routine, explore hidden gems in your area, and enjoy new
+                experiences with every visit.
               </FeatureCard>
-              <FeatureCard title="Decide how you integrate Payments">
+              <FeatureCard title="User Reviews and Ratings">
                 {" "}
-                Love to code? Decide how you integrate Payments and build
-                advanced and reliable products yourself from scratch.{" "}
+                Read reviews from fellow coffee enthusiasts to make the best
+                choice. With CafeQuest’s community feedback, you'll know exactly
+                what to expect from every cafe before you go.{" "}
               </FeatureCard>
             </Stack>
           </GridItem>
