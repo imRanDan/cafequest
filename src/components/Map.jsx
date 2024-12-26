@@ -41,6 +41,15 @@ export default function MapComponent({ userLocation, results }) {
 
   const limitedResults = results.slice(0, displayLimit);
 
+  // Handle map movement
+  const handleMapMove = (evt) => {
+    setViewport(evt.viewport);
+    // Increase display limit when user moves the map
+    if (displayLimit < results.length) {
+      setDisplayLimit((prevLimit) => Math.min(prevLimit + 10, results.length));
+    }
+  };
+
   return (
     <div style={{ width: "100%", height: "600px", position: "relative" }}>
       <Map
