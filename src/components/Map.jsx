@@ -17,8 +17,6 @@ export default function MapComponent({ userLocation, results }) {
     zoom: 13,
   });
 
-  const [selectedCafe, setSelectedCafe] = useState(null);
-
   useEffect(() => {
     setViewport((prevViewport) => ({
       ...prevViewport,
@@ -37,25 +35,31 @@ export default function MapComponent({ userLocation, results }) {
     []
   );
 
+  const [selectedCafe, setSelectedCafe] = useState(null);
   const [displayLimit, setDisplayLimit] = useState(10);
 
   const limitedResults = results.slice(0, displayLimit);
 
   // Handle map movement
   const handleMapMove = (evt) => {
+    console.log("Map moved:", evt);
     setViewport(evt.viewport);
     // Increase display limit when user moves the map
     if (displayLimit < results.length) {
-      setDisplayLimit((prevLimit) => Math.min(prevLimit + 10, results.length));
+      setDisplayLimit((prevLimit) => {
+        const newLimit = Math.min(prevLimit + 10, results.length);
+        console.log("New display limit:", newLimit);
+        return newLimit;
+      });
     }
   };
 
   return (
-    <div style={{ width: "100%", height: "600px", position: "relative" }}>
+    <div style={{ width: "90%", height: "600px", position: "relative" }}>
       <Map
         {...viewport}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-        onMove={(evt) => setViewport(evt.viewport)}
+        onMove={handleMapMove}
         style={{ width: "100%", height: "100%" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
       >
