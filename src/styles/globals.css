@@ -1,1 +1,4 @@
-
+.mapboxgl-canvas {
+  position: fixed !important;
+  height: 100% !important;
+}

@@ -1,73 +1,102 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import { useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import Map, { Marker, Popup } from "react-map-gl";
+import { Text, VStack, Badge } from "@chakra-ui/react";
+import "mapbox-gl/dist/mapbox-gl.css";
+import Image from "next/image";
 
-function CenterMap({ latitude, longitude }) {
-  const map = useMap();
-
-  // OpenStreetMap Attribution
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors",
-  }).addTo(map);
-
-  useEffect(() => {
-    if (latitude && longitude) {
-      map.setView([latitude, longitude], 13); // Move map center to the new location
-    }
-  }, [latitude, longitude, map]);
-
-  return null;
-}
-
-export default function Map({ userLocation, results }) {
+export default function MapComponent({ userLocation, results }) {
   const defaultLat = 51.505;
   const defaultLon = -0.09;
 
   const lat = userLocation?.lat ?? defaultLat;
   const lon = userLocation?.lon ?? defaultLon;
 
+  const [viewport, setViewport] = useState({
+    latitude: lat,
+    longitude: lon,
+    zoom: 13,
+  });
+
+  const [selectedCafe, setSelectedCafe] = useState(null);
+
+  useEffect(() => {
+    setViewport((prevViewport) => ({
+      ...prevViewport,
+      latitude: lat,
+      longitude: lon,
+    }));
+  }, [lat, lon]);
+
+  const icon = useMemo(
+    () => ({
+      url: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+      size: [25, 41],
+      anchor: [12, 41],
+      popupAnchor: [1, -34],
+    }),
+    []
+  );
+
+  const [displayLimit, setDisplayLimit] = useState(10);
+
+  const limitedResults = results.slice(0, displayLimit);
+
   return (
-    <MapContainer
-      center={[lat, lon]}
-      zoom={13}
-      width={"100%"}
-      height={"400px"}
-      style={{ width: "100%", height: "600px" }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      />
+    <div style={{ width: "100%", height: "600px", position: "relative" }}>
+      <Map
+        {...viewport}
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+        onMove={(evt) => setViewport(evt.viewport)}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle="mapbox://styles/mapbox/streets-v11"
+      >
+        {limitedResults.map(
+          (cafe, index) =>
+            cafe.lat &&
+            cafe.lon && (
+              <Marker
+                key={index}
+                latitude={cafe.lat}
+                longitude={cafe.lon}
+                onClick={(e) => {
+                  e.originalEvent.stopPropagation();
+                  setSelectedCafe(cafe);
+                }}
+              >
+                <Image src={icon.url} alt="Marker" width={25} height={41} />
+              </Marker>
+            )
+        )}
 
-      <CenterMap latitude={lat} longitude={lon} />
-
-      {/* Render markers */}
-      {results.map((cafe, index) => {
-        // Ensure each cafe has valid lat and lon
-        if (cafe.lat && cafe.lon) {
-          return (
-            <Marker
-              key={index}
-              position={[cafe.lat, cafe.lon]}
-              icon={
-                new L.Icon({
-                  iconUrl:
-                    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-                  iconSize: [25, 41],
-                  iconAnchor: [12, 41],
-                  popupAnchor: [1, -34],
-                  shadowSize: [41, 41],
-                })
-              }
+        {selectedCafe && (
+          <Popup
+            latitude={selectedCafe.lat}
+            longitude={selectedCafe.lon}
+            onClose={() => setSelectedCafe(null)}
+            closeButton={true}
+            closeOnClick={false}
+            offsetTop={-30}
+          >
+            <VStack
+              align="start"
+              spacing={2}
+              p={2}
+              bg="white"
+              borderRadius="md"
             >
-              <Popup>
-                <strong>{cafe.tags?.name || "Unnamed Cafe"}</strong>
-              </Popup>
-            </Marker>
-          );
-        }
-        return null; // Skip invalid markers
-      })}
-    </MapContainer>
+              <Text fontWeight="bold" fontSize="md" color="gray.800">
+                {selectedCafe.tags?.name || "Unnamed Cafe"}
+              </Text>
+              <Badge colorScheme="teal">{selectedCafe.tags?.amenity}</Badge>
+              {selectedCafe.tags?.["addr:street"] && (
+                <Text fontSize="sm" color="gray.600">
+                  {selectedCafe.tags["addr:street"]}
+                </Text>
+              )}
+            </VStack>
+          </Popup>
+        )}
+      </Map>
+    </div>
   );
 }

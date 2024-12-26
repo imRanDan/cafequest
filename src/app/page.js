@@ -1,21 +1,20 @@
-"use client"; // Add this directive to indicate that this component uses client-side rendering.
+"use client";
 
-import dynamic from "next/dynamic";
 import { useState } from "react";
-import { Center, ColorModeScript, Flex, Text } from "@chakra-ui/react";
-import theme from "./theme";
-// const Map = dynamic(() => import("../components/Map"), { ssr: false }); // turn this back into regular import when in dev/coding mode
-import Map from "@/components/Map"; //swap this with the above when launching
 import Head from "next/head";
-import SearchBar from "@/components/SearchBar";
+import { Center, Flex, Text } from "@chakra-ui/react";
+import SearchBar from "../components/SearchBar";
+import Map from "../components/Map";
 
-export default function Home() {
-  const [userLocation, setUserLocation] = useState(null); // State for user's location
-  const [searchResults, setSearchResults] = useState([]); // State for search results
+export default function HomePage() {
+  const [userLocation, setUserLocation] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
 
   return (
     <div>
       <Head>
+        <title>CafeQuest</title>
+        <meta name="description" content="Find the best cafes around you" />
         <link
           rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
