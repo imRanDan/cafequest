@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 function CenterMap({ latitude, longitude }) {
   const map = useMap();
