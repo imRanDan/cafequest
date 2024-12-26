@@ -14,7 +14,9 @@ export default function MapComponent({ userLocation, results }) {
   const [viewport, setViewport] = useState({
     latitude: lat,
     longitude: lon,
-    zoom: 13,
+    zoom: 15, //start more zoomed in
+    minZoom: 12, //prevent excessive zoom out
+    maxZoom: 18, // Limit maximum zoom in
   });
 
   useEffect(() => {
