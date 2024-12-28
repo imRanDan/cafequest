@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
-import { Text, VStack, Badge } from "@chakra-ui/react";
+import { Text, VStack, Badge, Link } from "@chakra-ui/react";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
 
@@ -107,6 +107,20 @@ export default function MapComponent({ userLocation, results }) {
                 <Text fontSize="sm" color="gray.600">
                   {selectedCafe.tags["addr:street"]}
                 </Text>
+              )}
+              {selectedCafe.tags?.["opening_hours"] && (
+                <Text fontSize="sm" color="gray.600">
+                  Hours: {selectedCafe.tags["opening_hours"]}
+                </Text>
+              )}
+              {selectedCafe.tags?.website && (
+                <Link
+                  href={selectedCafe.tags.website}
+                  isExternal
+                  color="blue.500"
+                >
+                  Website
+                </Link>
               )}
             </VStack>
           </Popup>

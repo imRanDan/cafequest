@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import axios from "axios";
 import { Input, Button, Stack, useToast } from "@chakra-ui/react";
 import debounce from "lodash.debounce";
@@ -8,20 +8,52 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
   const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
+  const lastRequestTime = useRef(0);
+
+  const waitForRateLimit = async () => {
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime.current;
+    if (timeSinceLastRequest < 1000) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 - timeSinceLastRequest)
+      );
+    }
+    lastRequestTime.current = Date.now();
+  };
 
   const fetchCafes = async (latitude, longitude) => {
     try {
+      await waitForRateLimit();
       const query = `
-        [out:json];
-        node["amenity"="cafe"](around:5000,${latitude},${longitude});
+        [out:json][timeout:25];
+        (
+          node["amenity"="cafe"](around:5000,${latitude},${longitude});
+          way["amenity"="cafe"](around:5000,${latitude},${longitude});
+        );
         out body;
+        >;
+        out skel qt;
+        out meta;
       `;
+
+      const formData = new URLSearchParams();
+      formData.append("data", query);
+
       const response = await axios.post(
         "https://overpass-api.de/api/interpreter",
-        query,
-        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+        formData.toString(),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
       );
-      setSearchResults(response.data.elements);
+
+      if (response.data && response.data.elements) {
+        setSearchResults(response.data.elements);
+      } else {
+        throw new Error("No cafe data received");
+      }
     } catch (error) {
       toast({
         title: "Error fetching cafes",
@@ -37,6 +69,7 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
     debounce(async (input) => {
       if (input.length < 3) return;
       try {
+        await waitForRateLimit();
         const response = await axios.get(
           `https://nominatim.openstreetmap.org/search?format=json&q=${input}&limit=5`
         );
@@ -44,7 +77,7 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
       } catch (error) {
         console.error("Error fetching location suggestions:", error);
       }
-    }, 300),
+    }, 1000), // Increased debounce time to 1000ms
     []
   );
 
