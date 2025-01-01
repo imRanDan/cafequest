@@ -9,6 +9,34 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const lastRequestTime = useRef(0);
+  const cache = useRef({
+    suggestions: {},
+    cafes: {},
+    expirationTime: 30 * 60 * 1000, //30 minutes for info to be cached
+  });
+
+  const getCacheKey = (type, query) => `${type} - ${query}`;
+
+  const getFromCache = (type, query) => {
+    const key = getCacheKey(type, query);
+    const cached = cache.current[type][key];
+    if (!cached) return null;
+
+    const now = Date.now();
+    if (non - cached.timestamp > cache.current.expirationTime) {
+      delete cache.current[type][key];
+      return null;
+    }
+    return cached.data;
+  };
+
+  const setInCache = (type, query, data) => {
+    const key = getCacheKey(type, query);
+    cache.current[type][key] = {
+      data,
+      timestamp: Date.now(),
+    };
+  };
 
   const waitForRateLimit = async () => {
     const now = Date.now();
@@ -22,6 +50,14 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
   };
 
   const fetchCafes = async (latitude, longitude) => {
+    const cacheKey = `${latitude}, ${longitude}`;
+    const cachedCafes = getFromCache("cafes", cacheKey);
+
+    if (cachedCafes) {
+      setSearchResults(cachedCafes);
+      return;
+    }
+
     try {
       await waitForRateLimit();
       const query = `
@@ -68,12 +104,20 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
   const fetchSuggestions = useCallback(
     debounce(async (input) => {
       if (input.length < 3) return;
+
+      const cachedSuggestions = getFromCache("suggestions", input);
+      if (cachedSuggestions) {
+        setSuggestions(cachedSuggestions);
+        return;
+      }
+
       try {
         await waitForRateLimit();
         const response = await axios.get(
           `https://nominatim.openstreetmap.org/search?format=json&q=${input}&limit=5`
         );
         setSuggestions(response.data);
+        setInCache("suggestions", input, response.data);
       } catch (error) {
         console.error("Error fetching location suggestions:", error);
       }
