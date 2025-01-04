@@ -11,12 +11,30 @@ export default function MapComponent({ userLocation, results }) {
   const lat = userLocation?.lat ?? defaultLat;
   const lon = userLocation?.lon ?? defaultLon;
 
+  // Validate and ensure coordinates are numbers
+  const validLat = Number(lat);
+  const validLon = Number(lon);
+
+  // Defining max boundaries for the map (roughly)
+  const maxBounds = useMemo(() => {
+    if (isNaN(validLat) || isNaN(validLon)) {
+      return [
+        [-180, -85],
+        [180, 85],
+      ]; // World bounds as fallback
+    }
+    return [
+      [validLon - 0.1, validLat - 0.1],
+      [validLon + 0.1, validLat + 0.1],
+    ];
+  }, [validLat, validLon]);
+
   const [viewport, setViewport] = useState({
-    latitude: lat,
-    longitude: lon,
-    zoom: 15, //start more zoomed in
-    minZoom: 12, //prevent excessive zoom out
-    maxZoom: 18, // Limit maximum zoom in
+    latitude: validLat,
+    longitude: validLon,
+    zoom: 15,
+    minZoom: 12,
+    maxZoom: 18,
   });
 
   useEffect(() => {
@@ -43,16 +61,21 @@ export default function MapComponent({ userLocation, results }) {
   const limitedResults = results.slice(0, displayLimit);
 
   // Handle map movement
+  // Map movement handler
   const handleMapMove = (evt) => {
-    console.log("Map moved:", evt);
-    setViewport(evt.viewport);
-    // Increase display limit when user moves the map
+    const { viewState } = evt;
+    if (!viewState?.latitude || !viewState?.longitude) return;
+
+    setViewport({
+      ...viewState,
+      zoom: viewState.zoom || 15,
+      minZoom: 12,
+      maxZoom: 18,
+    });
+
+    // Load more cafes if available
     if (displayLimit < results.length) {
-      setDisplayLimit((prevLimit) => {
-        const newLimit = Math.min(prevLimit + 10, results.length);
-        console.log("New display limit:", newLimit);
-        return newLimit;
-      });
+      setDisplayLimit((prev) => Math.min(prev + 10, results.length));
     }
   };
 
@@ -100,7 +123,7 @@ export default function MapComponent({ userLocation, results }) {
               borderRadius="md"
             >
               <Text fontWeight="bold" fontSize="md" color="gray.800">
-                {selectedCafe.tags?.name || "Unnamed Cafe"}
+                {selectedCafe.tags?.name}
               </Text>
               <Badge colorScheme="teal">{selectedCafe.tags?.amenity}</Badge>
               {selectedCafe.tags?.["addr:street"] && (
