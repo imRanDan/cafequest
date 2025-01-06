@@ -33,12 +33,18 @@ export default function LoginForm() {
   return (
     <VStack as="form" onSubmit={handleSubmit} spacing={4}>
       <Input
+        borderColor={"gray.800"}
+        color={"gray.600"}
+        _placeholder={{ color: "gray.200" }}
         type="email"
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <Input
+        borderColor={"gray.800"}
+        color={"gray.600"}
+        _placeholder={{ color: "gray.200" }}
         type="password"
         placeholder="Password"
         value={password}
@@ -52,7 +58,14 @@ export default function LoginForm() {
       >
         Sign In
       </Button>
-      <Button onClick={() => signIn("google")} variant="outline" width="100%">
+      <Button
+        color={"gray.800"}
+        borderColor={"gray.800"}
+        rounded={"full"}
+        onClick={() => signIn("google")}
+        variant="outline"
+        width="100%"
+      >
         Sign in with Google
       </Button>
     </VStack>
