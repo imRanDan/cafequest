@@ -1,5 +1,8 @@
+"use client";
+
 import localFont from "next/font/local";
 import { ChakraProvider } from "@chakra-ui/react";
+import { SessionProvider } from "next-auth/react";
 import theme from "./theme";
 
 const geistSans = localFont({
@@ -12,11 +15,6 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
-export const metadata = {
-  title: "CafeQuest",
-  description: "Find your next cafe here",
-};
 
 export default function RootLayout({ children }) {
   return (
@@ -31,7 +29,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ChakraProvider theme={theme}>{children}</ChakraProvider>
+        <SessionProvider>
+          <ChakraProvider theme={theme}>{children}</ChakraProvider>
+        </SessionProvider>
       </body>
     </html>
   );
