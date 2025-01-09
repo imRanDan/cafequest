@@ -74,8 +74,10 @@ export default function SignupForm() {
   return (
     <VStack as="form" onSubmit={handleSubmit} spacing={4} w="100%">
       <FormControl isInvalid={errors.name}>
-        <FormLabel>Name</FormLabel>
+        <FormLabel color={"gray.800"}>Name</FormLabel>
         <Input
+          color={"gray.800"}
+          borderColor={"gray.800"}
           type="text"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -85,8 +87,10 @@ export default function SignupForm() {
       </FormControl>
 
       <FormControl isInvalid={errors.email}>
-        <FormLabel>Email</FormLabel>
+        <FormLabel color={"gray.800"}>Email</FormLabel>
         <Input
+          color={"gray.800"}
+          borderColor={"gray.800"}
           type="email"
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -96,15 +100,17 @@ export default function SignupForm() {
       </FormControl>
 
       <FormControl isInvalid={errors.password}>
-        <FormLabel>Password</FormLabel>
+        <FormLabel color={"gray.800"}>Password</FormLabel>
         <InputGroup>
           <Input
+            color={"gray.800"}
+            borderColor={"gray.800"}
             type={showPassword ? "text" : "password"}
             value={formData.password}
             onChange={(e) =>
               setFormData({ ...formData, password: e.target.value })
             }
-            placeholder="Enter your password"
+            placeholder="Enter a password"
           />
           <InputRightElement>
             <IconButton
