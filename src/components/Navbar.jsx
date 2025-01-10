@@ -35,6 +35,9 @@ export default function Navbar() {
         {session ? (
           <Flex gap={4} align="center">
             <Text>Hello, {session.user.name}</Text>
+            <Link href="/profile">
+              <Button variant="ghost">Profile</Button>
+            </Link>
             <Button
               onClick={() => signOut({ callbackUrl: "/" })}
               colorScheme="teal"
