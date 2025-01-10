@@ -41,8 +41,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     try {
-      await signOut({ redirect: false });
-      router.push("/");
+      await signOut();
       toast({
         title: "Logged out successfully",
         status: "success",
@@ -72,7 +71,7 @@ export default function ProfilePage() {
               <Text color="gray.600">{session.user.email}</Text>
             </VStack>
           </Flex>
-          <Button colorScheme="red" variant="outline" onClick={handleLogout}>
+          <Button colorScheme="teal" variant="outline" onClick={handleLogout}>
             Sign Out
           </Button>
         </Flex>
