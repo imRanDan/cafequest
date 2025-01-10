@@ -1,20 +1,18 @@
 "use client";
 
-import { Box, VStack, Heading, Text, Container } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  return (
-    <Box minH="100vh" bg="gray.50" py={12}>
-      <Container maxW="md">
-        <VStack spacing={6}>
-          <Heading>My Profile</Heading>
-          <Text>Welcome {session?.user?.name}</Text>
-          <Text>Email: {session?.user?.email}</Text>
-        </VStack>
-      </Container>
-    </Box>
-  );
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/auth/login");
+    }
+  }, [status, router]);
+
+  return <div>Protected Profile Page</div>;
 }
