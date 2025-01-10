@@ -1,9 +1,17 @@
-import { Box, Flex, Button, Text } from "@chakra-ui/react";
+import { Box, Flex, Button, Text, Spinner } from "@chakra-ui/react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function Navbar() {
   const { data: session } = useSession();
+
+  if (status === "loading") {
+    return (
+      <Flex justify="center" align="center" h="100%">
+        <Spinner />
+      </Flex>
+    );
+  }
 
   return (
     <Flex
@@ -25,9 +33,10 @@ export default function Navbar() {
           <Flex gap={4} align="center">
             <Text>Hello, {session.user.name}</Text>
             <Button
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: "/" })}
               colorScheme="teal"
               variant="outline"
+              isLoading={status === "loading"}
             >
               Sign Out
             </Button>
