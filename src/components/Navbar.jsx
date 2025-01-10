@@ -3,7 +3,10 @@ import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 export default function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+
+  console.log("Session status:", status);
+  console.log("Session data:", session);
 
   if (status === "loading") {
     return (
