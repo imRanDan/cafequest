@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import { ChakraProvider } from "@chakra-ui/react";
 import { SessionProvider } from "next-auth/react";
 import theme from "./theme";
+import Navbar from "@/components/Navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,7 +31,10 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SessionProvider>
-          <ChakraProvider theme={theme}>{children}</ChakraProvider>
+          <ChakraProvider theme={theme}>
+            <Navbar />
+            {children}
+          </ChakraProvider>
         </SessionProvider>
       </body>
     </html>
