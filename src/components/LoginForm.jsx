@@ -34,8 +34,8 @@ export default function LoginForm() {
     <VStack as="form" onSubmit={handleSubmit} spacing={4}>
       <Input
         borderColor={"gray.800"}
-        color={"gray.600"}
-        _placeholder={{ color: "gray.200" }}
+        color={"gray.800"}
+        _placeholder={{ color: "gray.800" }}
         type="email"
         placeholder="Email"
         value={email}
@@ -43,7 +43,7 @@ export default function LoginForm() {
       />
       <Input
         borderColor={"gray.800"}
-        color={"gray.600"}
+        color={"gray.800"}
         _placeholder={{ color: "gray.200" }}
         type="password"
         placeholder="Password"

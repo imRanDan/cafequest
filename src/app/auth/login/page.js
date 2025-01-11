@@ -42,18 +42,22 @@ export default function LoginPage() {
   };
 
   return (
-    <Box minH="100vh" bg="gray.50" py={12}>
-      <Container maxW="md" bg="white" p={8} borderRadius="lg" boxShadow="md">
+    <Box minH="100vh" bg="gray.100" py={12}>
+      <Container maxW="md" bg="white" p={8} borderRadius="lg" boxShadow="lg">
         <VStack spacing={6}>
-          <Heading size="xl">Sign In</Heading>
+          <Heading size="xl" color="gray.800">
+            Sign In
+          </Heading>
 
           <Divider />
 
           <form onSubmit={handleEmailLogin} style={{ width: "100%" }}>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel>Email</FormLabel>
+                <FormLabel color="gray.800">Email</FormLabel>
                 <Input
+                  color="gray.800"
+                  borderColor="gray.800"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -61,8 +65,10 @@ export default function LoginPage() {
               </FormControl>
 
               <FormControl>
-                <FormLabel>Password</FormLabel>
+                <FormLabel color="gray.800">Password</FormLabel>
                 <Input
+                  color="gray.800"
+                  borderColor="gray.800"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -89,9 +95,14 @@ export default function LoginPage() {
             </VStack>
           </form>
 
-          <Text>
+          <Text color="gray.600">
             Don't have an account?{" "}
-            <Button variant="link" onClick={() => router.push("/auth/signup")}>
+            <Button
+              variant="link"
+              color="teal.600"
+              _hover={{ color: "teal.700" }}
+              onClick={() => router.push("/auth/signup")}
+            >
               Sign Up
             </Button>
           </Text>
