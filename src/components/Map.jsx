@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
-import { Text, VStack, Badge, Link } from "@chakra-ui/react";
+import { Text, VStack, Badge, Link, Button, Icon } from "@chakra-ui/react";
+import { useSession } from "next-auth/react";
+import { useToast } from "@chakra-ui/react";
+import { FaHeart } from "react-icons/fa";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
 
@@ -14,6 +17,50 @@ export default function MapComponent({ userLocation, results }) {
   // Validate and ensure coordinates are numbers
   const validLat = Number(lat);
   const validLon = Number(lon);
+
+  const { data: session } = useSession();
+  const toast = useToast();
+
+  // Save cafe handler
+  const handleSaveCafe = async (cafe) => {
+    if (!session) {
+      toast({
+        title: "Please login to save cafes",
+        status: "warning",
+        duration: 3000,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/cafes/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cafeId: cafe.id,
+          name: cafe.tags?.name,
+          latitude: cafe.lat,
+          longitude: cafe.lon,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to save cafe");
+
+      toast({
+        title: "Cafe saved!",
+        status: "success",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        title: "Error saving cafe",
+        status: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   // Defining max boundaries for the map (roughly)
   const maxBounds = useMemo(() => {
@@ -111,40 +158,23 @@ export default function MapComponent({ userLocation, results }) {
             latitude={selectedCafe.lat}
             longitude={selectedCafe.lon}
             onClose={() => setSelectedCafe(null)}
-            closeButton={true}
-            closeOnClick={false}
-            offsetTop={-30}
           >
-            <VStack
-              align="start"
-              spacing={2}
-              p={2}
-              bg="white"
-              borderRadius="md"
-            >
-              <Text fontWeight="bold" fontSize="md" color="gray.800">
-                {selectedCafe.tags?.name}
+            <VStack align="start" spacing={2}>
+              <Text fontWeight="bold">
+                {selectedCafe.tags?.name || "Unnamed Cafe"}
               </Text>
-              <Badge colorScheme="teal">{selectedCafe.tags?.amenity}</Badge>
-              {selectedCafe.tags?.["addr:street"] && (
-                <Text fontSize="sm" color="gray.600">
-                  {selectedCafe.tags["addr:street"]}
-                </Text>
-              )}
-              {selectedCafe.tags?.["opening_hours"] && (
-                <Text fontSize="sm" color="gray.600">
-                  Hours: {selectedCafe.tags["opening_hours"]}
-                </Text>
-              )}
-              {selectedCafe.tags?.website && (
-                <Link
-                  href={selectedCafe.tags.website}
-                  isExternal
-                  color="blue.500"
-                >
-                  Website
-                </Link>
-              )}
+              <Text fontSize="sm">
+                {selectedCafe.tags?.address || "No address"}
+              </Text>
+              <Button
+                size="sm"
+                colorScheme="teal"
+                leftIcon={<Icon as={FaHeart} />}
+                onClick={() => handleSaveCafe(selectedCafe)}
+                isDisabled={!session}
+              >
+                Save Cafe
+              </Button>
             </VStack>
           </Popup>
         )}
