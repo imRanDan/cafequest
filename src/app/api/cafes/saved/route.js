@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 // POST /api/cafes/saved - Save a new cafe
 export async function POST(req) {
   const session = await getServerSession();
+  console.log("Session:", session); // Debug session
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -12,6 +13,8 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
+    console.log("Request body:", body); // Debug payload
+
     const savedCafe = await prisma.savedCafe.create({
       data: {
         userId: session.user.id,
@@ -23,6 +26,7 @@ export async function POST(req) {
     });
     return NextResponse.json(savedCafe);
   } catch (error) {
+    console.error("Database error:", error); // Debug error
     return NextResponse.json({ error: "Failed to save cafe" }, { status: 500 });
   }
 }
