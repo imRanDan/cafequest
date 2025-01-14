@@ -33,29 +33,35 @@ export default function MapComponent({ userLocation, results }) {
     }
 
     try {
-      const response = await fetch("/api/cafes/save", {
+      const response = await fetch("/api/cafes/saved", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           cafeId: cafe.id,
-          name: cafe.tags?.name,
+          name: cafe.tags?.name || "Unnamed Cafe",
           latitude: cafe.lat,
           longitude: cafe.lon,
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to save cafe");
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to save cafe");
+      }
 
       toast({
-        title: "Cafe saved!",
+        title: "Cafe saved successfully!",
         status: "success",
         duration: 3000,
       });
     } catch (error) {
+      console.error("Save error:", error);
       toast({
         title: "Error saving cafe",
+        description: error.message,
         status: "error",
         duration: 3000,
       });
