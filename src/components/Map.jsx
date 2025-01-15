@@ -22,7 +22,13 @@ export default function MapComponent({ userLocation, results }) {
   const { data: session } = useSession();
   const toast = useToast();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (results && results.length >= 0) {
+      setIsLoading(false);
+    }
+  }, [results]);
 
   // Save cafe handler
   const handleSaveCafe = async (cafe) => {
@@ -137,6 +143,21 @@ export default function MapComponent({ userLocation, results }) {
 
   return (
     <div style={{ width: "90%", height: "600px", position: "relative" }}>
+      {isLoading && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1000,
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          borderRadius: '8px',
+          padding: '20px'
+        }}>
+          <LoadingSpinner />
+        </div>
+      )}
+
       <Map
         {...viewport}
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
@@ -188,20 +209,6 @@ export default function MapComponent({ userLocation, results }) {
           </Popup>
         )}
       </Map>
-      {isLoading && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 1000,
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          borderRadius: '8px',
-          padding: '20px'
-        }}>
-          <LoadingSpinner />
-        </div>
-      )}
     </div>
   );
 }
