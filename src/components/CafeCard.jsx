@@ -36,7 +36,7 @@ export default function CafeCard({ cafe }) {
         <Text fontWeight="bold" fontSize="xl">
           {cafe.name}
         </Text>
-        <Text color="gray.600">{cafe.address}</Text>
+        <Text color="gray.800">{cafe.address}</Text>
         <Button
           colorScheme="red"
           variant="outline"

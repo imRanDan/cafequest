@@ -7,6 +7,7 @@ import { FaHeart } from "react-icons/fa";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { CloseIcon } from "@chakra-ui/icons";
 
 export default function MapComponent({ userLocation, results }) {
   const defaultLat = 51.505;
@@ -22,6 +23,10 @@ export default function MapComponent({ userLocation, results }) {
   const { data: session } = useSession();
   const toast = useToast();
 
+  // This one is ONLY used for save cafe operation
+  const [isLoadingCafe, setIsLoadingCafe] = useState(false);
+
+  // This one is for initial loading of the map and cafe data
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -118,6 +123,7 @@ export default function MapComponent({ userLocation, results }) {
   );
 
   const [selectedCafe, setSelectedCafe] = useState(null);
+  
   const [displayLimit, setDisplayLimit] = useState(10);
 
   const limitedResults = results.slice(0, displayLimit);
@@ -139,6 +145,28 @@ export default function MapComponent({ userLocation, results }) {
     if (displayLimit < results.length) {
       setDisplayLimit((prev) => Math.min(prev + 10, results.length));
     }
+  };
+
+  const getFormattedAddress = (tags) => {
+    if (!tags) return null;
+
+    const addressParts = [];
+
+    // Check for street address
+    if (tags['addr:housenumber'] && tags['addr:street']) {
+      addressParts.push(`${tags['addr:housenumber']} ${tags['addr:street']}`);
+    } else if (tags.address) {
+      addressParts.push(tags.address);
+    } else if (tags.street) {
+      addressParts.push(tags.street);
+    }
+
+    // Check for additional address components
+    if (tags['addr:postcode']) addressParts.push(tags['addr:postcode']);
+    if (tags['addr:city']) addressParts.push(tags['addr:city']);
+    if (tags['addr:suburb']) addressParts.push(tags['addr:suburb']);
+
+    return addressParts.length > 0 ? addressParts.join(', ') : null;
   };
 
   return (
@@ -189,21 +217,37 @@ export default function MapComponent({ userLocation, results }) {
             longitude={selectedCafe.lon}
             onClose={() => setSelectedCafe(null)}
           >
-            <VStack align="start" spacing={2}>
-              <Text fontWeight="bold">
+            <VStack align="start" spacing={2} position="relative" w="100%">
+              <Button
+                position="absolute"
+                right="-8px"
+                top="-8px"
+                size="sm"
+                borderRadius="full"
+                colorScheme="red"
+                onClick={() => setSelectedCafe(null)}
+                p={1}
+                minW="auto"
+                height="auto"
+              >
+                <CloseIcon boxSize={2} />
+              </Button>
+
+              <Text color="gray.800" fontWeight="bold">
                 {selectedCafe.tags?.name || "Unnamed Cafe"}
               </Text>
-              <Text fontSize="sm">
-                {selectedCafe.tags?.address || "No address"}
+              <Text color="gray.800" fontSize="sm">
+                {getFormattedAddress(selectedCafe.tags) || "Address not available"}
               </Text>
               <Button
                 size="sm"
                 colorScheme="teal"
                 leftIcon={<Icon as={FaHeart} />}
                 onClick={() => handleSaveCafe(selectedCafe)}
-                isDisabled={!session}
+                isDisabled={!session || isLoadingCafe}
+                isLoading={isLoadingCafe}
               >
-                Save Cafe
+                {isLoadingCafe ? "Saving..." : "Save Cafe"}
               </Button>
             </VStack>
           </Popup>

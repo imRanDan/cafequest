@@ -23,7 +23,7 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
     if (!cached) return null;
 
     const now = Date.now();
-    if (non - cached.timestamp > cache.current.expirationTime) {
+    if (now - cached.timestamp > cache.current.expirationTime) {
       delete cache.current[type][key];
       return null;
     }
