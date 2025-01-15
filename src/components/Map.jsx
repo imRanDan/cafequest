@@ -6,7 +6,7 @@ import { useToast } from "@chakra-ui/react";
 import { FaHeart } from "react-icons/fa";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 export default function MapComponent({ userLocation, results }) {
   const defaultLat = 51.505;
@@ -21,6 +21,8 @@ export default function MapComponent({ userLocation, results }) {
 
   const { data: session } = useSession();
   const toast = useToast();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // Save cafe handler
   const handleSaveCafe = async (cafe) => {
@@ -186,6 +188,20 @@ export default function MapComponent({ userLocation, results }) {
           </Popup>
         )}
       </Map>
+      {isLoading && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1000,
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          borderRadius: '8px',
+          padding: '20px'
+        }}>
+          <LoadingSpinner />
+        </div>
+      )}
     </div>
   );
 }

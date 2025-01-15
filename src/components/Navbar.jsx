@@ -5,17 +5,6 @@ import Link from "next/link";
 export default function Navbar() {
   const { data: session, status } = useSession();
 
-  console.log("Session status:", status);
-  console.log("Session data:", session);
-
-  if (status === "loading") {
-    return (
-      <Flex justify="center" align="center" h="100%">
-        <Spinner />
-      </Flex>
-    );
-  }
-
   return (
     <Flex
       px={4}
@@ -32,7 +21,9 @@ export default function Navbar() {
       </Link>
 
       <Box>
-        {session ? (
+        {status === "loading" ? (
+          <Spinner size="sm" color="teal.200" />
+        ) : session ? (
           <Flex gap={4} align="center">
             <Text>Hello, {session.user.name}</Text>
             <Link href="/profile">
@@ -42,7 +33,6 @@ export default function Navbar() {
               onClick={() => signOut({ callbackUrl: "/" })}
               colorScheme="teal"
               variant="outline"
-              isLoading={status === "loading"}
             >
               Sign Out
             </Button>
