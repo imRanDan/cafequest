@@ -6,6 +6,7 @@ import { useToast } from "@chakra-ui/react";
 import { FaHeart } from "react-icons/fa";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 export default function MapComponent({ userLocation, results }) {
   const defaultLat = 51.505;
