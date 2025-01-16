@@ -15,11 +15,13 @@ import {
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useToast } from "@chakra-ui/react";
 import GoogleIcon from "@/components/GoogleIcon";
 
 export default function LoginPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,11 +36,33 @@ export default function LoginPage() {
     return <Box>Loading...</Box>;
   }
 
-  const handleEmailLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Email login logic here
-    setIsLoading(false);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.error || "Login failed");
+
+      // Handle successful login (e.g., redirect to profile)
+      router.push("/profile");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -51,7 +75,7 @@ export default function LoginPage() {
 
           <Divider />
 
-          <form onSubmit={handleEmailLogin} style={{ width: "100%" }}>
+          <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <VStack spacing={4}>
               <FormControl>
                 <FormLabel color="gray.800">Email</FormLabel>
