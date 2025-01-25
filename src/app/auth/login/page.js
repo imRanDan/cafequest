@@ -41,22 +41,27 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await res.json();
+      if (result.error) {
+        toast({
+          title: "Error",
+          description: result.error,
+          status: "error",
+          duration: 3000,
+        });
+        return;
+      }
 
-      if (!res.ok) throw new Error(data.error || "Login failed");
-
-      // Handle successful login (e.g., redirect to profile)
       router.push("/profile");
     } catch (error) {
       toast({
         title: "Error",
-        description: error.message,
+        description: "An error occurred during login",
         status: "error",
         duration: 3000,
       });
