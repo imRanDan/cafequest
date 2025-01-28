@@ -1,184 +1,55 @@
 import React from "react";
 import {
-  chakra,
   Box,
   Flex,
-  IconButton,
-  useColorModeValue,
-  Stack,
   Heading,
+  Text,
   Button,
+  Stack,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import CoffeeIcon from "./CoffeeIcon";
 
-export const Hero = () => {
-  const bg = useColorModeValue("white", "gray.800");
+const Hero = () => {
+  const textColor = useColorModeValue("gray.800", "black"); // Darker text for light mode
+
   return (
-    <chakra.header>
-      <chakra.nav bg={bg} shadow="base">
-        <Box mx="auto" px={6} py={3} maxW="full">
-          <Box
-            display={{
-              md: "flex",
-            }}
-            alignItems={{
-              md: "center",
-            }}
-            justifyContent={{
-              md: "space-between",
-            }}
-          >
-            <Flex alignItems="center" justifyContent="space-between">
-              <Box fontSize="xl" fontWeight="semibold" color="gray.700">
-                <chakra.a
-                  fontSize={["xl", , "2xl"]}
-                  fontWeight="bold"
-                  color="gray.800"
-                  _dark={{
-                    color: "white",
-                  }}
-                  _hover={{
-                    color: "gray.700",
-                    _dark: {
-                      color: "gray.300",
-                    },
-                  }}
-                >
-                  CafeQuest
-                </chakra.a>
-              </Box>
+    <Box p={5} textAlign="center" bg="gray.100">
+      <Heading mb={4} color={textColor}>Welcome to CafeQuest ☕</Heading>
+      <Text mb={4} color={textColor}>Discover the best cafes around you!</Text>
+      <Button colorScheme="teal" mb={6}>Get Started</Button>
 
-              <Flex
-                display={{
-                  md: "none",
-                }}
-              >
-                <IconButton aria-label="toggle menu" variant="ghost" />
-              </Flex>
-            </Flex>
+      <Flex direction="column" align="center">
+        <CoffeeIcon />
+        <Heading size="lg" mb={2} color={textColor}>What is CafeQuest?</Heading>
+        <Text mb={4} color={textColor}>
+          CafeQuest is your ultimate guide to discovering the best cafes around you.
+        </Text>
 
-            <Box
-              display={["none", , "flex"]}
-              alignItems={{
-                md: "center",
-              }}
-            >
-              <chakra.a
-                display="block"
-                mx={4}
-                mt={[2, , 0]}
-                fontSize="sm"
-                color="gray.700"
-                _dark={{
-                  color: "gray.200",
-                }}
-                textTransform="capitalize"
-                _hover={{
-                  color: "brand.400",
-                  _dark: {
-                    color: "blue.400",
-                  },
-                }}
-              >
-                Home
-              </chakra.a>
-              <chakra.a
-                display="block"
-                mx={4}
-                mt={[2, , 0]}
-                fontSize="sm"
-                color="gray.700"
-                _dark={{
-                  color: "gray.200",
-                }}
-                textTransform="capitalize"
-                _hover={{
-                  color: "brand.400",
-                  _dark: {
-                    color: "blue.400",
-                  },
-                }}
-              >
-                Dashboard
-              </chakra.a>
-              <chakra.a
-                display="block"
-                mx={4}
-                mt={[2, , 0]}
-                fontSize="sm"
-                color="gray.700"
-                _dark={{
-                  color: "gray.200",
-                }}
-                textTransform="capitalize"
-                _hover={{
-                  color: "brand.400",
-                  _dark: {
-                    color: "blue.400",
-                  },
-                }}
-              >
-                Signup
-              </chakra.a>
-              <chakra.a
-                display="block"
-                mx={4}
-                mt={[2, , 0]}
-                fontSize="sm"
-                color="gray.700"
-                _dark={{
-                  color: "gray.200",
-                }}
-                textTransform="capitalize"
-                _hover={{
-                  color: "brand.400",
-                  _dark: {
-                    color: "blue.400",
-                  },
-                }}
-              >
-                Login
-              </chakra.a>
-            </Box>
-          </Box>
-        </Box>
-      </chakra.nav>
+        <CoffeeIcon />
+        <Heading size="lg" mb={2} color={textColor}>Why CafeQuest?</Heading>
+        <Text mb={4} color={textColor}>
+          With personalized recommendations and user reviews, finding your next cafe is easy!
+        </Text>
 
-      <Box
-        w="full"
-        h="container.sm"
-        backgroundImage="url(https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80)"
-        bgPos="center"
-        bgSize="cover"
-      >
-        <Flex
-          align="center"
-          pos="relative"
-          justify="center"
-          boxSize="full"
-          bg="blackAlpha.700"
-        >
-          <Stack textAlign="center" alignItems="center" spacing={6}>
-            <Heading
-              fontSize={["2xl", , "3xl"]}
-              fontWeight="semibold"
-              color="white"
-              textTransform="uppercase"
-            >
-              Find your next{" "}
-              <chakra.span color="blue.400" textDecor="underline">
-                Cafe
-              </chakra.span>
-            </Heading>
-            <Button
-              colorScheme="brand"
-              textTransform="uppercase"
-              w="fit-content"
-            >
-              Find Cafe
-            </Button>
-          </Stack>
+        <CoffeeIcon />
+        <Heading size="lg" mb={2} color={textColor}>How It Works</Heading>
+        <Text mb={4} color={textColor}>
+          1. Search for cafes.<br />
+          2. Explore the list.<br />
+          3. Save your favorites.<br />
+          4. Enjoy your coffee adventures!
+        </Text>
+
+        <Heading size="lg" mb={2} color={textColor}>Join CafeQuest Today!</Heading>
+        <Text mb={4} color={textColor}>Sign up or log in to start your coffee journey.</Text>
+        <Flex justify="center" gap={4}>
+          <Button colorScheme="teal">Sign Up</Button>
+          <Button variant="outline">Log In</Button>
         </Flex>
-      </Box>
-    </chakra.header>
+      </Flex>
+    </Box>
   );
 };
+
+export default Hero;
