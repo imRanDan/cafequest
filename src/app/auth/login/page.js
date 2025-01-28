@@ -11,14 +11,20 @@ import {
   FormControl,
   FormLabel,
   Divider,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import GoogleIcon from "@/components/GoogleIcon";
+import { text } from "figlet";
 
 export default function LoginPage() {
+  const bgColor = useColorModeValue("gray.300", "gray.800");
+  const textColor = useColorModeValue("gray.600", "gray.400");
+  const cardBgColor = useColorModeValue("gray.200", "gray.700");
+
   const { data: session, status } = useSession();
   const router = useRouter();
   const toast = useToast();
@@ -71,10 +77,10 @@ export default function LoginPage() {
   };
 
   return (
-    <Box minH="100vh" bg="gray.100" py={12}>
-      <Container maxW="md" bg="white" p={8} borderRadius="lg" boxShadow="lg">
+    <Box minH="100vh" bg={bgColor} py={12}>
+      <Container maxW="md" bg={cardBgColor} p={8} borderRadius="lg" boxShadow="lg">
         <VStack spacing={6}>
-          <Heading size="xl" color="gray.800">
+          <Heading size="xl" color={textColor}>
             Sign In
           </Heading>
 
@@ -83,9 +89,9 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <VStack spacing={4}>
               <FormControl>
-                <FormLabel color="gray.800">Email</FormLabel>
+                <FormLabel color={textColor}>Email</FormLabel>
                 <Input
-                  color="gray.800"
+                  color={textColor}
                   borderColor="gray.800"
                   type="email"
                   value={email}
@@ -94,7 +100,7 @@ export default function LoginPage() {
               </FormControl>
 
               <FormControl>
-                <FormLabel color="gray.800">Password</FormLabel>
+                <FormLabel color={textColor}>Password</FormLabel>
                 <Input
                   color="gray.800"
                   borderColor="gray.800"

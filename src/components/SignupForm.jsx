@@ -13,10 +13,15 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 export default function SignupForm() {
+  const bgColor = useColorModeValue("gray.300", "gray.800");
+  const cardBgColor = useColorModeValue("gray.500", "gray.700");
+    const textColor = useColorModeValue("gray.800", "black"); // Darker text for light mode
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
