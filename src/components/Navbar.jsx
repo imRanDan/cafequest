@@ -11,12 +11,18 @@ export default function Navbar() {
       py={4}
       justify="space-between"
       align="center"
-      bg="gray.700"
-      shadow="sm"
+      bg="gray.800"
+      shadow="md"
     >
-      <Link href="/">
-        <Text fontSize="xl" fontWeight="bold">
+      <Link href="/" passHref>
+        <Text fontSize="xl" fontWeight="bold" color="white" _hover={{ textDecoration: "underline" }}>
           CafeQuest
+        </Text>
+      </Link>
+
+      <Link href="/landing" passHref>
+        <Text fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
+          About
         </Text>
       </Link>
 
@@ -25,9 +31,11 @@ export default function Navbar() {
           <Spinner size="sm" color="teal.200" />
         ) : session ? (
           <Flex gap={4} align="center">
-            <Text>Hello, {session.user.name}</Text>
-            <Link href="/profile">
-              <Button variant="ghost">Profile</Button>
+            <Text color="white">Hello, {session.user.name}</Text>
+            <Link href="/profile" passHref>
+              <Button variant="ghost" color="white" _hover={{ bg: "gray.600" }}>
+                Profile
+              </Button>
             </Link>
             <Button
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -39,10 +47,12 @@ export default function Navbar() {
           </Flex>
         ) : (
           <Flex gap={4}>
-            <Link href="/auth/login">
-              <Button variant="ghost">Login</Button>
+            <Link href="/auth/login" passHref>
+              <Button variant="ghost" color="white" _hover={{ bg: "gray.600" }}>
+                Login
+              </Button>
             </Link>
-            <Link href="/auth/signup">
+            <Link href="/auth/signup" passHref>
               <Button colorScheme="teal">Sign Up</Button>
             </Link>
           </Flex>
