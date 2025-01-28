@@ -1,8 +1,12 @@
 import React from 'react';
 import { Box, Button, Flex, Heading, Text, VStack, Icon, useColorModeValue } from '@chakra-ui/react';
 import { FaCoffee, FaSearch, FaHeart, FaSignInAlt } from 'react-icons/fa';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import { color } from 'gulp-cli/lib/shared/cli-options';
 
 export default function CafeQuestHomepage() {
+  const { data: session } = useSession();
   const bgColor = useColorModeValue("gray.300", "gray.800");
   const textColor = useColorModeValue("gray.800", "gray.200");
   const cardBgColor = useColorModeValue("gray.500", "gray.700");
@@ -54,28 +58,34 @@ export default function CafeQuestHomepage() {
             <Heading as="h3" size="md" mb={2} color={textColor}>
               {step.title}
             </Heading>
-            <Text color="gray.600">{step.description}</Text>
+            <Text color={textColor}>{step.description}</Text>
           </VStack>
         ))}
       </Flex>
 
-      {/* CTA Section */}
-      <Box bg={cardBgColor} shadow="md" rounded="lg" p={6} mx="auto" maxW="4xl">
-        <Heading as="h2" size="lg" color="brown.800" mb={4}>
-          Join CafeQuest Today!
-        </Heading>
-        <Text color={textColor} mb={6}>
-          Sign up or log in to start your coffee journey.
-        </Text>
-        <Flex justify="center" gap={4}>
-          <Button colorScheme="brown" bg="brown.600" color="white" _hover={{ bg: "brown.700" }}>
-            Sign Up
-          </Button>
-          <Button variant="outline" colorScheme="brown">
-            Log In
-          </Button>
-        </Flex>
-      </Box>
+      {/* Conditional CTA Section */}
+      {!session && (
+        <Box bg={cardBgColor} shadow="md" rounded="lg" p={6} mx="auto" maxW="4xl">
+          <Heading as="h2" size="lg" color="brown.800" mb={4}>
+            Join CafeQuest Today!
+          </Heading>
+          <Text color={textColor} mb={6}>
+            Sign up or log in to start your coffee journey.
+          </Text>
+          <Flex justify="center" gap={4}>
+            <Link href="/auth/signup" passHref>
+              <Button colorScheme="brown" bg="brown.600" color="white" _hover={{ bg: "brown.700" }}>
+                Sign Up
+              </Button>
+            </Link>
+            <Link href="/auth/login" passHref>
+              <Button variant="outline" colorScheme="brown">
+                Log In
+              </Button>
+            </Link>
+          </Flex>
+        </Box>
+      )}
 
       {/* Footer */}
       <Text mt={10} color="gray.500" fontSize="sm">
