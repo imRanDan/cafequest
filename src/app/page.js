@@ -26,13 +26,11 @@ export default function HomePage() {
         <Text fontSize={"2xl"}>Welcome to CafeQuest ☕</Text>
       </Center>
       <Flex direction={"column"} align={"center"} gap={4}>
-        {/* Pass setSearchResults to SearchBar */}
         <SearchBar
           setUserLocation={setUserLocation}
           setSearchResults={setSearchResults}
         />
-        {/* Pass both userLocation and searchResults to the Map */}
-        <Map userLocation={userLocation} results={searchResults} />
+        <Map userLocation={userLocation} results={searchResults} setUserLocation={setUserLocation} />
       </Flex>
     </div>
   );

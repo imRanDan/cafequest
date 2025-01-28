@@ -21,6 +21,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaTrash, FaMapMarkerAlt } from "react-icons/fa";
+import Map from "@/components/Map";
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -166,6 +167,9 @@ export default function ProfilePage() {
                     <Flex justify="space-between" align="center">
                       <Text fontSize="sm" color="gray.500">
                         Saved on {new Date(cafe.createdAt).toLocaleDateString()}
+                      </Text>
+                      <Text fontSize="sm" color="gray.500">
+                        {cafe.location?.address || "Address not available"}
                       </Text>
                       <IconButton
                         icon={<FaMapMarkerAlt />}

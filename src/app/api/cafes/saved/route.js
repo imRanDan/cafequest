@@ -38,6 +38,7 @@ export async function POST(req) {
         name: body.name || "Unnamed Cafe",
         latitude: Number(body.latitude),
         longitude: Number(body.longitude),
+        address: body.address || null,
       },
     });
 
@@ -45,11 +46,8 @@ export async function POST(req) {
     return NextResponse.json({ success: true, data: savedCafe });
 
   } catch (error) {
-    console.error("Error in API route:", error.message);
-    return NextResponse.json(
-      { success: false, error: error.message }, 
-      { status: 500 }
-    );
+    console.error("Error saving cafe:", error.message);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
