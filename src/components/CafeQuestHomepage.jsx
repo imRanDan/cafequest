@@ -3,7 +3,7 @@ import { Box, Button, Flex, Heading, Text, VStack, Icon, useColorModeValue } fro
 import { FaCoffee, FaSearch, FaHeart, FaSignInAlt } from 'react-icons/fa';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import { color } from 'gulp-cli/lib/shared/cli-options';
+
 
 export default function CafeQuestHomepage() {
   const { data: session } = useSession();
