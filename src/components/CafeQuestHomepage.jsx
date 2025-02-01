@@ -1,8 +1,7 @@
 import React from 'react';
 import { Box, Button, Flex, Heading, Text, VStack, Icon, useColorModeValue } from '@chakra-ui/react';
-import { FaCoffee, FaSearch, FaHeart, FaSignInAlt } from 'react-icons/fa';
+import { FaCoffee, FaSearch } from 'react-icons/fa';
 import Link from 'next/link';
-
 
 export default function CafeQuestHomepage() {
   const bgColor = useColorModeValue("gray.300", "gray.800");
@@ -31,7 +30,7 @@ export default function CafeQuestHomepage() {
           Why CafeQuest?
         </Heading>
         <Text color={textColor}>
-          With personalized recommendations and user reviews, finding your next cafe is easy!
+          Find great cafes in your area with our easy-to-use search!
         </Text>
       </Box>
 
@@ -39,9 +38,7 @@ export default function CafeQuestHomepage() {
       <Flex wrap="wrap" justify="center" gap={6} mb={8}>
         {[
           { icon: FaSearch, title: "Search", description: "Search for cafes near you." },
-          { icon: FaCoffee, title: "Explore", description: "Explore the list of cafes." },
-          { icon: FaHeart, title: "Save Favorites", description: "Keep track of your favorite spots." },
-          { icon: FaSignInAlt, title: "Enjoy", description: "Savor your coffee adventures!" }
+          { icon: FaCoffee, title: "Explore", description: "Explore the list of cafes." }
         ].map((step, idx) => (
           <VStack
             key={idx}
@@ -61,27 +58,11 @@ export default function CafeQuestHomepage() {
         ))}
       </Flex>
 
-      {/* Conditional CTA Section */}
-        <Box bg={cardBgColor} shadow="md" rounded="lg" p={6} mx="auto" maxW="4xl">
-          <Heading as="h2" size="lg" color="brown.800" mb={4}>
-            Join CafeQuest Today!
-          </Heading>
-          <Text color={textColor} mb={6}>
-            Sign up or log in to start your coffee journey.
-          </Text>
-          <Flex justify="center" gap={4}>
-            <Link href="/auth/signup" passHref>
-              <Button colorScheme="brown" bg="brown.600" color="white" _hover={{ bg: "brown.700" }}>
-                Sign Up
-              </Button>
-            </Link>
-            <Link href="/auth/login" passHref>
-              <Button variant="outline" colorScheme="brown">
-                Log In
-              </Button>
-            </Link>
-          </Flex>
-        </Box>
+      <Link href="/" passHref>
+        <Button colorScheme="teal" size="lg">
+          Start Exploring
+        </Button>
+      </Link>
 
       {/* Footer */}
       <Text mt={10} color="gray.500" fontSize="sm">
