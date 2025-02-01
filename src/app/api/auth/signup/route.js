@@ -4,7 +4,11 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    // Log the incoming request body
+    const body = await req.json();
+    console.log("Received request body:", body);
+
+    const { name, email, password } = body;
 
     // Validate input
     if (!email || !password || !name) {
@@ -46,9 +50,20 @@ export async function POST(req) {
       },
     });
   } catch (error) {
-    console.error("Signup error:", error);
+    // Improved error logging
+    console.error("Signup error:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+
+    // Always return a valid JSON object
     return NextResponse.json(
-      { error: "Error creating account" },
+      { 
+        error: "Error creating account", 
+        details: error.message || "Unknown error",
+        type: error.name
+      },
       { status: 500 }
     );
   }
