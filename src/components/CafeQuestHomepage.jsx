@@ -2,11 +2,9 @@ import React from 'react';
 import { Box, Button, Flex, Heading, Text, VStack, Icon, useColorModeValue } from '@chakra-ui/react';
 import { FaCoffee, FaSearch, FaHeart, FaSignInAlt } from 'react-icons/fa';
 import Link from 'next/link';
-import { useSession } from 'next-auth/react';
 
 
 export default function CafeQuestHomepage() {
-  const { data: session } = useSession();
   const bgColor = useColorModeValue("gray.300", "gray.800");
   const textColor = useColorModeValue("gray.800", "gray.200");
   const cardBgColor = useColorModeValue("gray.500", "gray.700");
@@ -64,7 +62,6 @@ export default function CafeQuestHomepage() {
       </Flex>
 
       {/* Conditional CTA Section */}
-      {!session && (
         <Box bg={cardBgColor} shadow="md" rounded="lg" p={6} mx="auto" maxW="4xl">
           <Heading as="h2" size="lg" color="brown.800" mb={4}>
             Join CafeQuest Today!
@@ -85,7 +82,6 @@ export default function CafeQuestHomepage() {
             </Link>
           </Flex>
         </Box>
-      )}
 
       {/* Footer */}
       <Text mt={10} color="gray.500" fontSize="sm">

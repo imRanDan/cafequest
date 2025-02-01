@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
 import { Text, VStack, Badge, Link, Button, Icon } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
 import { useToast } from "@chakra-ui/react";
 import { FaHeart } from "react-icons/fa";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -20,7 +19,6 @@ export default function MapComponent({ userLocation, results }) {
   const validLat = Number(lat);
   const validLon = Number(lon);
 
-  const { data: session } = useSession();
   const toast = useToast();
 
   // This one is ONLY used for save cafe operation
@@ -35,52 +33,6 @@ export default function MapComponent({ userLocation, results }) {
     }
   }, [results]);
 
-  // Save cafe handler
-  const handleSaveCafe = async (cafe) => {
-    if (!session) {
-      toast({
-        title: "Please login to save cafes",
-        status: "warning",
-        duration: 3000,
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/cafes/saved", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cafeId: cafe.id,
-          name: cafe.tags?.name || "Unnamed Cafe",
-          latitude: cafe.lat,
-          longitude: cafe.lon,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to save cafe");
-      }
-
-      toast({
-        title: "Cafe saved successfully!",
-        status: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      console.error("Save error:", error);
-      toast({
-        title: "Error saving cafe",
-        description: error.message,
-        status: "error",
-        duration: 3000,
-      });
-    }
-  };
 
   // Defining max boundaries for the map (roughly)
   const maxBounds = useMemo(() => {
@@ -239,16 +191,16 @@ export default function MapComponent({ userLocation, results }) {
               <Text color="gray.800" fontSize="sm">
                 {getFormattedAddress(selectedCafe.tags) || "Address not available"}
               </Text>
-              <Button
+              {/* <Button
                 size="sm"
                 colorScheme="teal"
                 leftIcon={<Icon as={FaHeart} />}
                 onClick={() => handleSaveCafe(selectedCafe)}
-                isDisabled={!session || isLoadingCafe}
+                isDisabled={isLoadingCafe}
                 isLoading={isLoadingCafe}
               >
                 {isLoadingCafe ? "Saving..." : "Save Cafe"}
-              </Button>
+              </Button> */}
             </VStack>
           </Popup>
         )}

@@ -125,7 +125,7 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
     []
   );
 
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     if (!location.trim()) return;
     setIsLoading(true);
     try {
@@ -155,7 +155,7 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [location, setUserLocation, setSearchResults, toast, fetchCafes]);
 
   const handleChange = (e) => {
     const value = e.target.value;
@@ -170,7 +170,7 @@ export default function SearchBar({ setUserLocation, setSearchResults }) {
         value={location}
         onChange={handleChange}
       />
-      <Button onClick={() => handleSearch(location)}>Search</Button>
+      <Button onClick={handleSearch}>Search</Button>
     </Stack>
   );
 }

@@ -195,7 +195,7 @@ export const Features = () => {
               <FeatureCard title="User Reviews and Ratings">
                 {" "}
                 Read reviews from fellow coffee enthusiasts to make the best
-                choice. With CafeQuest’s community feedback, you'll know exactly
+                choice. With CafeQuest&apos;s community feedback, you&apos;ll know exactly
                 what to expect from every cafe before you go.{" "}
               </FeatureCard>
             </Stack>
