@@ -188,6 +188,21 @@ export default function MapComponent({
               </Marker>
             )
         )}
+        {userCoords && (
+          <Marker latitude={userCoords.lat} longitude={userCoords.lon}>
+            <div
+              style={{
+                width: "20px",
+                height: "20px",
+                backgroundColor: "red",
+                border: "2px solid white",
+                borderRadius: "50%",
+                boxShadow: "0 0 5px rgba(0, 0, 0, 0.5",
+              }}
+              title="Your general location"
+            />
+          </Marker>
+        )}
 
         {selectedCafe && (
           <Popup
