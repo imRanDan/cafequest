@@ -8,12 +8,35 @@ import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CloseIcon } from "@chakra-ui/icons";
 
-export default function MapComponent({ userLocation, results }) {
+export default function MapComponent({
+  userLocation,
+  results,
+  setUserLocation,
+  fetchCafes,
+}) {
+  const [userCoords, setUserCoords] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserCoords({ lat: latitude, lon: longitude });
+        },
+        (error) => {
+          console.error("Error getting user location:", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported or window is undefined.");
+    }
+  }, []);
+
   const defaultLat = 51.505;
   const defaultLon = -0.09;
 
-  const lat = userLocation?.lat ?? defaultLat;
-  const lon = userLocation?.lon ?? defaultLon;
+  const lat = userLocation?.lat ?? userLocation?.lat ?? defaultLat;
+  const lon = userLocation?.lon ?? userLocation?.lon ?? defaultLon;
 
   // Validate and ensure coordinates are numbers
   const validLat = Number(lat);
@@ -33,7 +56,6 @@ export default function MapComponent({ userLocation, results }) {
     }
   }, [results]);
 
-
   // Defining max boundaries for the map (roughly)
   const maxBounds = useMemo(() => {
     if (isNaN(validLat) || isNaN(validLon)) {
@@ -49,20 +71,22 @@ export default function MapComponent({ userLocation, results }) {
   }, [validLat, validLon]);
 
   const [viewport, setViewport] = useState({
-    latitude: validLat,
-    longitude: validLon,
+    latitude: defaultLat,
+    longitude: defaultLon,
     zoom: 15,
     minZoom: 12,
     maxZoom: 18,
   });
 
   useEffect(() => {
-    setViewport((prevViewport) => ({
-      ...prevViewport,
-      latitude: lat,
-      longitude: lon,
-    }));
-  }, [lat, lon]);
+    if (userCoords) {
+      setViewport((prev) => ({
+        ...prev,
+        latitude: userCoords.lat,
+        longitude: userCoords.lon,
+      }));
+    }
+  }, [userCoords]);
 
   const icon = useMemo(
     () => ({
@@ -75,7 +99,7 @@ export default function MapComponent({ userLocation, results }) {
   );
 
   const [selectedCafe, setSelectedCafe] = useState(null);
-  
+
   const [displayLimit, setDisplayLimit] = useState(10);
 
   const limitedResults = results.slice(0, displayLimit);
@@ -105,8 +129,8 @@ export default function MapComponent({ userLocation, results }) {
     const addressParts = [];
 
     // Check for street address
-    if (tags['addr:housenumber'] && tags['addr:street']) {
-      addressParts.push(`${tags['addr:housenumber']} ${tags['addr:street']}`);
+    if (tags["addr:housenumber"] && tags["addr:street"]) {
+      addressParts.push(`${tags["addr:housenumber"]} ${tags["addr:street"]}`);
     } else if (tags.address) {
       addressParts.push(tags.address);
     } else if (tags.street) {
@@ -114,26 +138,28 @@ export default function MapComponent({ userLocation, results }) {
     }
 
     // Check for additional address components
-    if (tags['addr:postcode']) addressParts.push(tags['addr:postcode']);
-    if (tags['addr:city']) addressParts.push(tags['addr:city']);
-    if (tags['addr:suburb']) addressParts.push(tags['addr:suburb']);
+    if (tags["addr:postcode"]) addressParts.push(tags["addr:postcode"]);
+    if (tags["addr:city"]) addressParts.push(tags["addr:city"]);
+    if (tags["addr:suburb"]) addressParts.push(tags["addr:suburb"]);
 
-    return addressParts.length > 0 ? addressParts.join(', ') : null;
+    return addressParts.length > 0 ? addressParts.join(", ") : null;
   };
 
   return (
     <div style={{ width: "90%", height: "600px", position: "relative" }}>
       {isLoading && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          zIndex: 1000,
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          borderRadius: '8px',
-          padding: '20px'
-        }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 1000,
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            borderRadius: "8px",
+            padding: "20px",
+          }}
+        >
           <LoadingSpinner />
         </div>
       )}
@@ -189,7 +215,8 @@ export default function MapComponent({ userLocation, results }) {
                 {selectedCafe.tags?.name || "Unnamed Cafe"}
               </Text>
               <Text color="gray.800" fontSize="sm">
-                {getFormattedAddress(selectedCafe.tags) || "Address not available"}
+                {getFormattedAddress(selectedCafe.tags) ||
+                  "Address not available"}
               </Text>
               {/* <Button
                 size="sm"
@@ -205,6 +232,26 @@ export default function MapComponent({ userLocation, results }) {
           </Popup>
         )}
       </Map>
+      <Button
+        colorScheme="teal"
+        mt={4}
+        onClick={() => {
+          if (userCoords?.lat && userCoords?.lon) {
+            // Trigger SearchBar's logic from here
+            fetchCafes(userCoords.lat, userCoords.lon); // You need to lift this up to parent first
+            setUserLocation({ lat: userCoords.lat, lon: userCoords.lon });
+          } else {
+            toast({
+              title: "Location not available",
+              description: "Make sure location is enabled",
+              status: "error",
+              duration: 3000,
+            });
+          }
+        }}
+      >
+        Find Cafes in My Local Area
+      </Button>
     </div>
   );
 }

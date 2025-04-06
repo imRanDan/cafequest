@@ -1,14 +1,111 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Head from "next/head";
 import { Center, Flex, Text } from "@chakra-ui/react";
 import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
+import axios from "axios";
+import { useToast } from "@chakra-ui/react";
 
 export default function HomePage() {
   const [userLocation, setUserLocation] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
+  const toast = useToast();
+
+  const lastRequestTime = useRef(0);
+
+  const cache = useRef({
+    suggestions: {},
+    cafes: {},
+    expirationTime: 30 * 60 * 1000, //30 minutes for info to be cached
+  });
+
+  const getCacheKey = (type, query) => `${type} - ${query}`;
+
+  const getFromCache = (type, query) => {
+    const key = getCacheKey(type, query);
+    const cached = cache.current[type][key];
+    if (!cached) return null;
+
+    const now = Date.now();
+    if (now - cached.timestamp > cache.current.expirationTime) {
+      delete cache.current[type][key];
+      return null;
+    }
+    return cached.data;
+  };
+
+  const setInCache = (type, query, data) => {
+    const key = getCacheKey(type, query);
+    cache.current[type][key] = {
+      data,
+      timestamp: Date.now(),
+    };
+  };
+
+  const waitForRateLimit = async () => {
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime.current;
+    if (timeSinceLastRequest < 1000) {
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 - timeSinceLastRequest)
+      );
+    }
+    lastRequestTime.current = Date.now();
+  };
+
+  const fetchCafes = async (latitude, longitude) => {
+    const cacheKey = `${latitude}, ${longitude}`;
+    const cachedCafes = getFromCache("cafes", cacheKey);
+
+    if (cachedCafes) {
+      setSearchResults(cachedCafes);
+      return;
+    }
+
+    try {
+      await waitForRateLimit();
+      const query = `
+        [out:json][timeout:25];
+        (
+          node["amenity"="cafe"](around:5000,${latitude},${longitude});
+          way["amenity"="cafe"](around:5000,${latitude},${longitude});
+        );
+        out body;
+        >;
+        out skel qt;
+        out meta;
+      `;
+
+      const formData = new URLSearchParams();
+      formData.append("data", query);
+
+      const response = await axios.post(
+        "https://overpass-api.de/api/interpreter",
+        formData.toString(),
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+
+      if (response.data && response.data.elements) {
+        setSearchResults(response.data.elements);
+      } else {
+        throw new Error("No cafe data received");
+      }
+    } catch (error) {
+      toast({
+        title: "Error fetching cafes",
+        description: "Could not find cafes in this area",
+        status: "error",
+        duration: 3000,
+      });
+      console.error("Error fetching cafes data:", error);
+    }
+  };
 
   return (
     <div>
@@ -29,8 +126,14 @@ export default function HomePage() {
         <SearchBar
           setUserLocation={setUserLocation}
           setSearchResults={setSearchResults}
+          fetchCafes={fetchCafes}
         />
-        <Map userLocation={userLocation} results={searchResults} setUserLocation={setUserLocation} />
+        <Map
+          userLocation={userLocation}
+          results={searchResults}
+          setUserLocation={setUserLocation}
+          fetchCafes={fetchCafes}
+        />
       </Flex>
     </div>
   );
