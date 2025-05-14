@@ -1,3 +1,5 @@
+"use client"
+
 import { Box, Flex, Button, Text, Spinner } from "@chakra-ui/react";
 import Link from "next/link";
 
@@ -22,6 +24,7 @@ export default function Navbar() {
           About
         </Text>
       </Link>
+    
     </Flex>
   );
 }
