@@ -88,6 +88,19 @@ export default function MapComponent({
     }
   }, [userCoords]);
 
+  //Use effect so when user searches a location in the search bar and clicks to search it will refresh the maps new location and local cafes
+    useEffect(() => {
+    if (userLocation?.lat && userLocation?.lon) {
+      setViewport((prev) => ({
+        ...prev,
+        latitude: userLocation.lat,
+        longitude: userLocation.lon,
+        zoom: 15,
+      }));
+    }
+  }, [userLocation]);
+
+  //This is for the markers that you see on the map
   const icon = useMemo(
     () => ({
       url: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
@@ -98,10 +111,12 @@ export default function MapComponent({
     []
   );
 
+  
   const [selectedCafe, setSelectedCafe] = useState(null);
 
   const [displayLimit, setDisplayLimit] = useState(10);
 
+  //I used this for limiting results but not sure if it worked LOL
   const limitedResults = results.slice(0, displayLimit);
 
   // Handle map movement

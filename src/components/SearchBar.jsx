@@ -14,29 +14,29 @@ export default function SearchBar({
   const toast = useToast();
   const lastRequestTime = useRef(0);
 
-  const fetchSuggestions = useCallback(
-    debounce(async (input) => {
-      if (input.length < 3) return;
+  // const fetchSuggestions = useCallback(
+  //   // debounce(async (input) => {
+  //   //   // if (input.length < 3) return;
 
-      const cachedSuggestions = getFromCache("suggestions", input);
-      if (cachedSuggestions) {
-        setSuggestions(cachedSuggestions);
-        return;
-      }
+  //   //   // const cachedSuggestions = getFromCache("suggestions", input);
+  //   //   // if (cachedSuggestions) {
+  //   //   //   setSuggestions(cachedSuggestions);
+  //   //   //   return;
+  //   //   // }
 
-      try {
-        await waitForRateLimit();
-        const response = await axios.get(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${input}&limit=5`
-        );
-        setSuggestions(response.data);
-        setInCache("suggestions", input, response.data);
-      } catch (error) {
-        console.error("Error fetching location suggestions:", error);
-      }
-    }, 1000), // Increased debounce time to 1000ms
-    []
-  );
+  //   //   try {
+  //   //     await waitForRateLimit();
+  //   //     const response = await axios.get(
+  //   //       `https://nominatim.openstreetmap.org/search?format=json&q=${input}&limit=5`
+  //   //     );
+  //   //     setSuggestions(response.data);
+  //   //     setInCache("suggestions", input, response.data);
+  //   //   } catch (error) {
+  //   //     console.error("Error fetching location suggestions:", error);
+  //   //   }
+  //   // }, 1000), // Increased debounce time to 1000ms
+  //   // []
+  // );
 
   const handleSearch = useCallback(async () => {
     if (!location.trim()) return;
@@ -73,7 +73,6 @@ export default function SearchBar({
   const handleChange = (e) => {
     const value = e.target.value;
     setLocation(value);
-    fetchSuggestions(value);
   };
 
   return (
