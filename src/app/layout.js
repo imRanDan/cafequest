@@ -3,7 +3,6 @@
 import { Providers } from "@/providers/Providers";
 import Navbar from "@/components/Navbar";
 import localFont from "next/font/local";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -30,7 +29,6 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
-          <ThemeSwitcher />
           <Navbar />
           {children}
         </Providers>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
-import { Text, VStack, Badge, Link, Button, Icon } from "@chakra-ui/react";
+import { Text, VStack, Badge, Link, Button, Icon, Flex, Box } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import { FaHeart } from "react-icons/fa";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -161,127 +161,132 @@ export default function MapComponent({
   };
 
   return (
-    <div style={{ width: "90%", height: "600px", position: "relative" }}>
-      {isLoading && (
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            zIndex: 1000,
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
-            borderRadius: "8px",
-            padding: "20px",
-          }}
-        >
-          <LoadingSpinner />
-        </div>
-      )}
-
-      <Map
-        {...viewport}
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
-        onMove={handleMapMove}
-        style={{ width: "100%", height: "100%" }}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
-      >
-        {limitedResults.map(
-          (cafe, index) =>
-            cafe.lat &&
-            cafe.lon && (
-              <Marker
-                key={index}
-                latitude={cafe.lat}
-                longitude={cafe.lon}
-                onClick={(e) => {
-                  e.originalEvent.stopPropagation();
-                  setSelectedCafe(cafe);
-                }}
-              >
-                <Image src={icon.url} alt="Marker" width={25} height={41} />
-              </Marker>
-            )
-        )}
-        {userCoords && (
-          <Marker latitude={userCoords.lat} longitude={userCoords.lon}>
+  <Box w="100%" maxW="6xl" mx="auto" px={4} mb={6}>
+    <Box w="100%" h={{ base:"300px", md: "500px"}}>
+          {isLoading && (
             <div
               style={{
-                width: "20px",
-                height: "20px",
-                backgroundColor: "red",
-                border: "2px solid white",
-                borderRadius: "50%",
-                boxShadow: "0 0 5px rgba(0, 0, 0, 0.5",
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 1000,
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                borderRadius: "8px",
+                padding: "20px",
               }}
-              title="Your general location"
-            />
-          </Marker>
-        )}
+            >
+              <LoadingSpinner />
+            </div>
+          )}
 
-        {selectedCafe && (
-          <Popup
-            latitude={selectedCafe.lat}
-            longitude={selectedCafe.lon}
-            onClose={() => setSelectedCafe(null)}
+          <Map
+            {...viewport}
+            mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+            onMove={handleMapMove}
+            style={{ width: "100%", height: "100%" }}
+            mapStyle="mapbox://styles/mapbox/streets-v11"
           >
-            <VStack align="start" spacing={2} position="relative" w="100%">
-              <Button
-                position="absolute"
-                right="-8px"
-                top="-8px"
-                size="sm"
-                borderRadius="full"
-                colorScheme="red"
-                onClick={() => setSelectedCafe(null)}
-                p={1}
-                minW="auto"
-                height="auto"
-              >
-                <CloseIcon boxSize={2} />
-              </Button>
+            {limitedResults.map(
+              (cafe, index) =>
+                cafe.lat &&
+                cafe.lon && (
+                  <Marker
+                    key={index}
+                    latitude={cafe.lat}
+                    longitude={cafe.lon}
+                    onClick={(e) => {
+                      e.originalEvent.stopPropagation();
+                      setSelectedCafe(cafe);
+                    }}
+                  >
+                    <Image src={icon.url} alt="Marker" width={25} height={41} />
+                  </Marker>
+                )
+            )}
+            {userCoords && (
+              <Marker latitude={userCoords.lat} longitude={userCoords.lon}>
+                <div
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    backgroundColor: "red",
+                    border: "2px solid white",
+                    borderRadius: "50%",
+                    boxShadow: "0 0 5px rgba(0, 0, 0, 0.5",
+                  }}
+                  title="Your general location"
+                />
+              </Marker>
+            )}
 
-              <Text color="gray.800" fontWeight="bold">
-                {selectedCafe.tags?.name || "Unnamed Cafe"}
-              </Text>
-              <Text color="gray.800" fontSize="sm">
-                {getFormattedAddress(selectedCafe.tags) ||
-                  "Address not available"}
-              </Text>
-              {/* <Button
-                size="sm"
-                colorScheme="teal"
-                leftIcon={<Icon as={FaHeart} />}
-                onClick={() => handleSaveCafe(selectedCafe)}
-                isDisabled={isLoadingCafe}
-                isLoading={isLoadingCafe}
+            {selectedCafe && (
+              <Popup
+                latitude={selectedCafe.lat}
+                longitude={selectedCafe.lon}
+                onClose={() => setSelectedCafe(null)}
               >
-                {isLoadingCafe ? "Saving..." : "Save Cafe"}
-              </Button> */}
-            </VStack>
-          </Popup>
-        )}
-      </Map>
-      <Button
-        colorScheme="teal"
-        mt={4}
-        onClick={() => {
-          if (userCoords?.lat && userCoords?.lon) {
-            // Trigger SearchBar's logic from here
-            fetchCafes(userCoords.lat, userCoords.lon); // You need to lift this up to parent first
-            setUserLocation({ lat: userCoords.lat, lon: userCoords.lon });
-          } else {
-            toast({
-              title: "Location not available",
-              description: "Make sure location is enabled",
-              status: "error",
-              duration: 3000,
-            });
-          }
-        }}
-      >
-        Find Cafes in My Local Area
-      </Button>
-    </div>
+                <VStack align="start" spacing={2} position="relative" w="100%">
+                  <Button
+                    position="absolute"
+                    right="-8px"
+                    top="-8px"
+                    size="sm"
+                    borderRadius="full"
+                    colorScheme="red"
+                    onClick={() => setSelectedCafe(null)}
+                    p={1}
+                    minW="auto"
+                    height="auto"
+                  >
+                    <CloseIcon boxSize={2} />
+                  </Button>
+
+                  <Text color="gray.800" fontWeight="bold">
+                    {selectedCafe.tags?.name || "Unnamed Cafe"}
+                  </Text>
+                  <Text color="gray.800" fontSize="sm">
+                    {getFormattedAddress(selectedCafe.tags) ||
+                      "Address not available"}
+                  </Text>
+                  {/* <Button
+                    size="sm"
+                    colorScheme="teal"
+                    leftIcon={<Icon as={FaHeart} />}
+                    onClick={() => handleSaveCafe(selectedCafe)}
+                    isDisabled={isLoadingCafe}
+                    isLoading={isLoadingCafe}
+                  >
+                    {isLoadingCafe ? "Saving..." : "Save Cafe"}
+                  </Button> */}
+                </VStack>
+              </Popup>
+            )}
+          </Map>
+          <Button
+            colorScheme="teal"
+            mt={4}
+            display={"flex"}
+            justifyItems={"end"}
+            onClick={() => {
+              if (userCoords?.lat && userCoords?.lon) {
+                // Trigger SearchBar's logic from here
+                fetchCafes(userCoords.lat, userCoords.lon); // You need to lift this up to parent first
+                setUserLocation({ lat: userCoords.lat, lon: userCoords.lon });
+              } else {
+                toast({
+                  title: "Location not available",
+                  description: "Make sure location is enabled",
+                  status: "error",
+                  duration: 3000,
+                });
+              }
+            }}
+          >
+            Find cafes near me
+          </Button>
+        </Box>
+    </Box>
+  
   );
 }

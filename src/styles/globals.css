@@ -1,4 +1,7 @@
-.mapboxgl-canvas {
-  position: fixed !important;
-  height: 100% !important;
+/* app/globals.css or styles/globals.css */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
+

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Head from "next/head";
-import { Center, Flex, Text } from "@chakra-ui/react";
+import { Box, Center, Container, Flex, Stack, Text } from "@chakra-ui/react";
 import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
 import axios from "axios";
@@ -108,7 +108,7 @@ export default function HomePage() {
   };
 
   return (
-    <div>
+    <>
       <Head>
         <title>CafeQuest</title>
         <meta name="description" content="Find the best cafes around you" />
@@ -119,22 +119,36 @@ export default function HomePage() {
           crossOrigin=""
         />
       </Head>
-      <Center display={"flex"} flexDir={"column"} mb={4}>
-        <Text fontSize={"2xl"}>Welcome to CafeQuest ☕</Text>
+
+      <Container maxW="6xl" py={10}>
+        {/* Title */}
+      <Center mb={6}>
+        <Text fontSize={{ base: '2xl', md: '3xl' }} fontWeight="bold">
+          Welcome to CafeQuest ☕
+        </Text>
       </Center>
-      <Flex direction={"column"} align={"center"} gap={4}>
+
+    <Stack spacing={6} align="center" width="100%">
+      {/* Search*/}
+      <Box w="100%" maxW="md">
         <SearchBar
           setUserLocation={setUserLocation}
           setSearchResults={setSearchResults}
           fetchCafes={fetchCafes}
         />
-        <Map
-          userLocation={userLocation}
-          results={searchResults}
-          setUserLocation={setUserLocation}
-          fetchCafes={fetchCafes}
-        />
-      </Flex>
-    </div>
+      </Box>
+
+        {/* Map */}
+        <Box w="100%" maxW="5xl">
+          <Map
+            userLocation={userLocation}
+            results={searchResults}
+            setUserLocation={setUserLocation}
+            fetchCafes={fetchCafes}
+          />
+        </Box>
+    </Stack>
+  </Container>
+    </>
   );
 }
