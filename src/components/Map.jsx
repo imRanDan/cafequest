@@ -7,6 +7,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CloseIcon } from "@chakra-ui/icons";
+import Footer from "./Footer";
 
 export default function MapComponent({
   userLocation,
@@ -161,8 +162,10 @@ export default function MapComponent({
   };
 
   return (
+    <>
+
   <Box w="100%" maxW="6xl" mx="auto" px={4} mb={6}>
-    <Box w="100%" h={{ base:"300px", md: "500px"}}>
+    <Box borderRadius="md" overflow="hidden" boxShadow="md" w="100%" h={["60vh", "500px"]} position="relative"> 
           {isLoading && (
             <div
               style={{
@@ -249,44 +252,37 @@ export default function MapComponent({
                     {getFormattedAddress(selectedCafe.tags) ||
                       "Address not available"}
                   </Text>
-                  {/* <Button
-                    size="sm"
-                    colorScheme="teal"
-                    leftIcon={<Icon as={FaHeart} />}
-                    onClick={() => handleSaveCafe(selectedCafe)}
-                    isDisabled={isLoadingCafe}
-                    isLoading={isLoadingCafe}
-                  >
-                    {isLoadingCafe ? "Saving..." : "Save Cafe"}
-                  </Button> */}
+
                 </VStack>
               </Popup>
             )}
           </Map>
-          <Button
-            colorScheme="teal"
-            mt={4}
-            display={"flex"}
-            justifyItems={"end"}
-            onClick={() => {
-              if (userCoords?.lat && userCoords?.lon) {
-                // Trigger SearchBar's logic from here
-                fetchCafes(userCoords.lat, userCoords.lon); // You need to lift this up to parent first
-                setUserLocation({ lat: userCoords.lat, lon: userCoords.lon });
-              } else {
-                toast({
-                  title: "Location not available",
-                  description: "Make sure location is enabled",
-                  status: "error",
-                  duration: 3000,
-                });
-              }
-            }}
-          >
-            Find cafes near me
-          </Button>
         </Box>
+
+        <Flex justify="center" mt={4}>
+                  <Button
+                    colorScheme="teal"
+                    onClick={() => {
+                      if (userCoords?.lat && userCoords?.lon) {
+                        // Trigger SearchBar's logic from here
+                        fetchCafes(userCoords.lat, userCoords.lon); // You need to lift this up to parent first
+                        setUserLocation({ lat: userCoords.lat, lon: userCoords.lon });
+                      } else {
+                        toast({
+                          title: "Location not available",
+                          description: "Make sure location is enabled",
+                          status: "error",
+                          duration: 3000,
+                        });
+                      }
+                    }}
+                  >
+                    Find cafes near me
+                  </Button>
+        </Flex>
     </Box>
-  
+
+        <Footer/>
+      </>
   );
 }
