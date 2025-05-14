@@ -18,6 +18,13 @@ export default function MapComponent({
   const [userCoords, setUserCoords] = useState(null);
 
   useEffect(() => {
+    const isDemo = true;
+
+      if (isDemo) {
+        setUserCoords({ lat: 43.6532, lon: -79.3832 }); //Downtown Toronto
+        return;
+      }
+
     if (typeof window !== "undefined" && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
