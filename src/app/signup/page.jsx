@@ -13,12 +13,14 @@ import {
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { getClientAuth } from '@/config/firebase';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@chakra-ui/react';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const toast = useToast();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -27,11 +29,28 @@ export default function SignupPage() {
     try {
       const auth = getClientAuth(); // 👈 safe for client
       await createUserWithEmailAndPassword(auth, email, password);
+
+      toast({
+        title: 'Account successfully created.',
+        description: "You've successfully signed up!",
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      })
+
       router.push('/'); // or wherever post-signup
     } catch (err) {
-      setError(err.message);
+      toast({
+        title: 'Signup failed',
+        description: err.message || 'Something went wrong.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      })
     }
   };
+
+
 
   return (
     <Box maxW="md" mx="auto" mt={10} p={6} boxShadow="md" borderRadius="md">
