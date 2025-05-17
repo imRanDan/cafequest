@@ -48,6 +48,7 @@ export default function Navbar() {
         </Text>
       </Link>
 
+    {/* Checks if user is logged in then show logout */}
       {loading ? (
       <Spinner color="white" />
     ) : user ? (
@@ -58,6 +59,7 @@ export default function Navbar() {
         </Button>
       </Flex>
     ) : (
+      // If user is logged out, show login and signup buttons.
       <Flex align="center" gap={4}>
         <Link href="/login" passHref>
           <Button colorScheme="teal" variant="outline" size="sm">
