@@ -4,7 +4,7 @@ import { Box, Button, FormControl, FormLabel, Input, Heading, useToast } from "@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
-import { getClientAuth } from "@/config/firebase";
+import { auth } from "@/config/firebase";
 
 
 export default function LoginPage() {
@@ -17,7 +17,7 @@ export default function LoginPage() {
         e.preventDefault();
 
         try {
-            const auth = getClientAuth();
+            // const auth = getClientAuth();
             await signInWithEmailAndPassword(auth, email, password);
             //toast to show successful login
             toast({

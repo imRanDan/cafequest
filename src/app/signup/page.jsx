@@ -11,7 +11,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { getClientAuth } from '@/config/firebase';
+import { auth } from '@/config/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@chakra-ui/react';
 
@@ -27,7 +27,7 @@ export default function SignupPage() {
     setError('');
 
     try {
-      const auth = getClientAuth(); // 👈 safe for client
+      // const auth = getClientAuth(); // 👈 safe for client
       await createUserWithEmailAndPassword(auth, email, password);
 
       toast({

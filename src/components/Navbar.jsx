@@ -3,14 +3,15 @@
 import { Box, Flex, Button, Text, Spinner, useToast } from "@chakra-ui/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getClientAuth } from "@/config/firebase";
+// import { getClientAuth } from "@/config/firebase";
+import { auth } from "@/config/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
-  const auth = getClientAuth();
+  // const auth = getClientAuth();
 
   //listens for auth changes
   useEffect(() => {

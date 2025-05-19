@@ -21,11 +21,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// This delays getAuth until it's called in a client file
-let _auth = null;
-export const getClientAuth = () => {
-  if (!_auth) {
-    _auth = getAuth(app);
-  }
-  return _auth;
-};
+// // This delays getAuth until it's called in a client file
+// let _auth = null;
+// export const getClientAuth = () => {
+//   if (!_auth) {
+//     _auth = getAuth(app);
+//   }
+//   return _auth;
+// };
+
+export const auth = getAuth(app);
