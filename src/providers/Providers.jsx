@@ -9,7 +9,9 @@ export function Providers({ children }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
     <ChakraProvider theme={theme}>
+      <AuthProvider>
       {children}
+      </AuthProvider>
       </ChakraProvider>
     </ThemeProvider>
 
