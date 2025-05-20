@@ -1,9 +1,42 @@
 "use client"
 
-import { Box, Flex, Button, Text, Spinner } from "@chakra-ui/react";
+import { Box, Flex, Button, Text, Spinner, useToast } from "@chakra-ui/react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+// import { getClientAuth } from "@/config/firebase";
+import { auth } from "@/config/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const toast = useToast();
+  const router = useRouter();
+  // const auth = getClientAuth();
+
+  //listens for auth changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  //logout handler
+  const handleLogout = async () => {
+    await signOut(auth);
+    toast({
+      title: 'Logged out successfully.',
+      status: 'info',
+      duration: 3000,
+      isClosable: true,
+    });
+    router.push("login");
+  }
+
   return (
     <Flex
       px={6}
@@ -18,6 +51,44 @@ export default function Navbar() {
           CafeQuest
         </Text>
       </Link>
+
+    {/* Checks if user is logged in then show logout */}
+      {loading ? (
+      <Spinner color="white" />
+    ) : user ? (
+      <Flex align="center" gap={4}>
+        <Link href="/dashboard">
+          <Button size='sm' variant='ghost' colorScheme='teal'>
+            Dashboard
+          </Button>
+        </Link>
+
+        <Link href='/profile'>
+          <Button size='sm' variant='ghost' colorScheme='teal'>
+            Profile
+          </Button>
+        </Link>
+        
+        {/* <Text color="white">Hello, {user.email}</Text> commenting this out for now   */}
+        <Button onClick={handleLogout} colorScheme="red" size="sm">
+          Logout
+        </Button>
+      </Flex>
+    ) : (
+      // If user is logged out, show login and signup buttons.
+      <Flex align="center" gap={4}>
+        <Link href="/login" passHref>
+          <Button colorScheme="teal" variant="outline" size="sm">
+            Login
+          </Button>
+        </Link>
+        <Link href="/signup" passHref>
+          <Button colorScheme="teal" size="sm">
+            Sign Up
+          </Button>
+        </Link>
+      </Flex>
+    )}
 
       <Link href="/landing" passHref>
         <Text p={2} fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
