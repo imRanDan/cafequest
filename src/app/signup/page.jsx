@@ -14,11 +14,15 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/config/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@chakra-ui/react';
+import { useEffect } from 'react';
+import { useAuth } from '@/utils/AuthProvider';
+import AlreadyHaveAnAccount from '@/components/AlreadyHaveAnAccount';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { user, loading } = useAuth();
   const router = useRouter();
   const toast = useToast();
 
@@ -50,6 +54,14 @@ export default function SignupPage() {
     }
   };
 
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/dashboard");
+    }
+  }, [user, loading]);
+
+  if (loading || user) return null;
+
 
 
   return (
@@ -80,6 +92,7 @@ export default function SignupPage() {
           Sign Up
         </Button>
       </form>
+      <AlreadyHaveAnAccount />
     </Box>
   );
 }

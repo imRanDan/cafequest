@@ -3,8 +3,10 @@
 import { Box, Button, FormControl, FormLabel, Input, Heading, useToast } from "@chakra-ui/react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { auth } from "@/config/firebase";
+import { useAuth } from "@/utils/AuthProvider";
+import NeedAnAccount from "@/components/NeedAnAccount";
 
 
 export default function LoginPage() {
@@ -12,6 +14,9 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const toast = useToast();
     const router = useRouter();
+    const { user, loading } = useAuth();
+
+
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -40,6 +45,16 @@ export default function LoginPage() {
     };
 
 
+    // This handles the edge case where when a user is logged in and tries to go to /login in the url it will redirect them to their dashboard
+    useEffect(() => {
+      if (!loading && user) {
+        router.push("/dashboard")
+      }
+    }, [user, loading])
+
+    if (loading || user) return null;
+
+
     return (
         <Box maxW="md" mx="auto" mt={10} p={6} borderWidth={1} borderRadius="md">
       <Heading mb={6}>Log In</Heading>
@@ -66,6 +81,7 @@ export default function LoginPage() {
           Log In
         </Button>
       </form>
+      <NeedAnAccount />
     </Box>
     )
 }
