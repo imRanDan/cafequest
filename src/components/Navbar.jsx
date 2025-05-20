@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 // import { getClientAuth } from "@/config/firebase";
 import { auth } from "@/config/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
+  const router = useRouter();
   // const auth = getClientAuth();
 
   //listens for auth changes
@@ -32,6 +34,7 @@ export default function Navbar() {
       duration: 3000,
       isClosable: true,
     });
+    router.push("login");
   }
 
   return (
@@ -54,7 +57,19 @@ export default function Navbar() {
       <Spinner color="white" />
     ) : user ? (
       <Flex align="center" gap={4}>
-        <Text color="white">Hello, {user.email}</Text>
+        <Link href="/dashboard">
+          <Button size='sm' variant='ghost' colorScheme='teal'>
+            Dashboard
+          </Button>
+        </Link>
+
+        <Link href='/profile'>
+          <Button size='sm' variant='ghost' colorScheme='teal'>
+            Profile
+          </Button>
+        </Link>
+        
+        {/* <Text color="white">Hello, {user.email}</Text> commenting this out for now   */}
         <Button onClick={handleLogout} colorScheme="red" size="sm">
           Logout
         </Button>
