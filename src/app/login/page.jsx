@@ -56,31 +56,31 @@ export default function LoginPage() {
 
 
     return (
-        <Box maxW="md" mx="auto" mt={10} p={6} borderWidth={1} borderRadius="md">
-      <Heading mb={6}>Log In</Heading>
-      <form onSubmit={handleLogin}>
-        <FormControl mb={4}>
-          <FormLabel>Email</FormLabel>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </FormControl>
-        <FormControl mb={6}>
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </FormControl>
-        <Button type="submit" colorScheme="teal" width="full">
-          Log In
-        </Button>
-      </form>
+      <Box maxW="md" mx="auto" mt={10} p={6} borderWidth={1} boxShadow="md" borderRadius="md">
+        <Heading mb={6}>Log In</Heading>
+          <form onSubmit={handleLogin}>
+            <FormControl mb={4}>
+              <FormLabel>Email</FormLabel>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </FormControl>
+            <FormControl mb={6}>
+              <FormLabel>Password</FormLabel>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </FormControl>
+            <Button type="submit" colorScheme="teal" width="full">
+              Log In
+            </Button>
+          </form>
       <NeedAnAccount />
     </Box>
     )

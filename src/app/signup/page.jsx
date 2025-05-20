@@ -65,7 +65,7 @@ export default function SignupPage() {
 
 
   return (
-    <Box maxW="md" mx="auto" mt={10} p={6} boxShadow="md" borderRadius="md">
+    <Box maxW="md" mx="auto" mt={10} p={6} borderWidth={1} boxShadow="md" borderRadius="md">
       <Heading mb={6}>Sign Up</Heading>
       <form onSubmit={handleSignup}>
         <FormControl mb={4} isRequired>
