@@ -52,7 +52,7 @@ export default function SignupPage() {
         isClosable: true,
       })
 
-      router.push('/'); // or wherever post-signup
+      router.push('/'); // or wherever post-signup but for now it pushes you to /
     } catch (err) {
       toast({
         title: 'Signup failed',

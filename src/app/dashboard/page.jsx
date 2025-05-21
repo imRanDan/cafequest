@@ -16,6 +16,7 @@ export default function DashboardPage() {
     const [savedCafes, setSavedCafes] = useState([]);
     const [userData, setUserData] = useState(null);
 
+    //fetches user data to load in later
     useEffect(() => {
         const fetchUserData = async () => {
             if (!user) return;
@@ -30,6 +31,7 @@ export default function DashboardPage() {
         fetchUserData()
     }, [user])
 
+    //fetches saved cafe data to load in to the dash
     useEffect(() => {
         const fetchSaved = async () => {
             if (!user) return;
@@ -42,6 +44,20 @@ export default function DashboardPage() {
         fetchSaved()
     }, [user]);
 
+// 🔒 TEST: Unauthenticated Firestore access (leave this commented unless testing)
+//     useEffect(() => {
+//         const testAccess = async () => {
+//             try {
+//             const snapshot = await getDocs(collection(db, "users"));
+//             console.log("Unprotected access succeeded:", snapshot.docs.length);
+//             } catch (err) {
+//             console.error("🔒 Firebase permission error (expected):", err.message);
+//             }
+//         };
+//   testAccess();
+// }, []);
+
+    // Checks if user is logged in before loading a dash, will redirect unauthorized users to log in
     useEffect(() => {
         if (!loading && !user ) {
             router.push("/login");
