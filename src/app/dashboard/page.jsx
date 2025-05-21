@@ -5,7 +5,7 @@ import { useAuth } from "@/utils/AuthProvider"
 import { useRouter } from "next/navigation"
 // import cafes from "@/data/cafes" no need for sample data set as cafecards show now
 import CafeCard from "@/components/CafeCard"
-import { SimpleGrid, Box, Heading } from "@chakra-ui/react";
+import { Text, SimpleGrid, Box, Heading } from "@chakra-ui/react";
 import {collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase"
 import { doc, getDoc} from "firebase/firestore";
@@ -53,10 +53,16 @@ export default function DashboardPage() {
     return (
         <>
         
-        <div>
-            <h1>Your dashboard!</h1>
-            <p>Welcome back, {userData?.name || user.email}!</p>
-        </div>
+        <Box textAlign="center" mt={10} mb={6}>
+            <Heading as="h2" size="lg" mb={2}>
+                Welcome to your dashboard ☕️
+            </Heading>
+            <Text fontSize="md" color="gray.600">
+                {userData?.fullName
+                ? `Welcome back, ${userData.fullName}!`
+                : `Welcome back, ${user.email}`}
+            </Text>
+        </Box>
 
 
         <Box p={6}>

@@ -38,7 +38,7 @@ export default function SignupPage() {
       const user = userCredential.user;
 
       await setDoc(doc(db, "users", user.uid), {
-        name: fullName,
+        fullName: fullName,
         email: user.email,
         createdAt: new Date().toISOString(),
       })

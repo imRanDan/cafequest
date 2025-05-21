@@ -25,6 +25,22 @@ export default function ProfilePage() {
     }, [user, loading])
 
 
+    //fetch users full name once they're logged in
+    useEffect(() => {
+        if (!loading && user) {
+            const fetchUserProfile = async () => {
+                const docRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setFullName(data.fullName || "No name set");
+                }
+            };
+            fetchUserProfile();
+        }
+    }, [user, loading]);
+
+
     const handleLogout = async () => {
         await signOut(auth);
         toast({
@@ -42,8 +58,8 @@ export default function ProfilePage() {
     return (
         <Box maxW='md' mx='auto' mt={10} p={4} borderWidth={1} borderRadius='lg'>
             <Heading size='md' mb={4}>Your profile</Heading>
-            <Text><strong>Email:</strong>{user.email}</Text>
-            <Text><strong>Name:</strong>{user.name}</Text>
+            <Text><strong>Email: </strong>{user.email}</Text>
+            <Text><strong>Name: </strong>{fullName}</Text>
             {/* For future reference, add full name, profile pic, etc. here */}
             <Button colorScheme='red' mt={6} onClick={handleLogout}>
                 Logout
