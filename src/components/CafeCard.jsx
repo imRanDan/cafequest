@@ -1,51 +1,21 @@
-import { Box, VStack, Text, Button, useToast } from "@chakra-ui/react";
-import { useState } from "react";
+import { Box, Image, Text, Stack, Badge} from "@chakra-ui/react";
 
 export default function CafeCard({ cafe }) {
-  const [isSaving, setIsSaving] = useState(false);
-  const toast = useToast();
-
-  const handleUnsave = async () => {
-    setIsSaving(true);
-    try {
-      const response = await fetch(`/api/cafes/saved/${cafe.id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) throw new Error("Failed to unsave cafe");
-
-      toast({
-        title: "Cafe removed from saved",
-        status: "success",
-        duration: 3000,
-      });
-    } catch (error) {
-      toast({
-        title: "Error removing cafe",
-        status: "error",
-        duration: 3000,
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const fallbackImage = "https://plus.unsplash.com/premium_photo-1664970900025-1e3099ca757a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
 
   return (
-    <Box p={5} shadow="md" borderWidth="1px" borderRadius="lg">
-      <VStack align="start" spacing={3}>
-        <Text fontWeight="bold" fontSize="xl">
-          {cafe.name}
-        </Text>
-        <Text color="gray.800">{cafe.address}</Text>
-        <Button
-          colorScheme="red"
-          variant="outline"
-          isLoading={isSaving}
-          onClick={handleUnsave}
-        >
-          Remove from Saved
-        </Button>
-      </VStack>
+    <Box borderWidth="1px" borderRadius="lg" overflow="hidden" shadow="md" bg="white" _hover={{ shadow: "lg"}} transition="all 0.2s">
+      <Image src={cafe.image || fallbackImage } alt={cafe.name || "Cafe"} objectFit="cover" height="200px" width="100%" fallbackSrc={fallbackImage} />
+
+      <Box p={4}>
+        <Stack spacing={2}>
+          <Text fontWeight="bold" fontSize="xl">{cafe.name || "Unnamed Cafe"}</Text>
+          <Text color="gray.600" fontSize="sm">{cafe.address || "Address not available"}</Text>
+          <Text fontSize="sm">{cafe.description || "No description available"}</Text>
+          <Badge colorScheme="green" width="fit-content">Open</Badge>
+        </Stack>
+      </Box>
     </Box>
-  );
+  )
+    
 }

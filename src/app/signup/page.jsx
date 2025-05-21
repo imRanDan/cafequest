@@ -11,15 +11,17 @@ import {
   Text
 } from '@chakra-ui/react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/config/firebase';
+import { auth, db } from '@/config/firebase';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useAuth } from '@/utils/AuthProvider';
 import AlreadyHaveAnAccount from '@/components/AlreadyHaveAnAccount';
+import { doc, setDoc } from 'firebase/firestore';
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const { user, loading } = useAuth();
@@ -32,8 +34,16 @@ export default function SignupPage() {
 
     try {
       // const auth = getClientAuth(); // 👈 safe for client
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
+      await setDoc(doc(db, "users", user.uid), {
+        fullName: fullName,
+        email: user.email,
+        createdAt: new Date().toISOString(),
+      })
+
+      //Save the users name + email to Firestore
       toast({
         title: 'Account successfully created.',
         description: "You've successfully signed up!",
@@ -69,6 +79,14 @@ export default function SignupPage() {
       <Heading mb={6}>Sign Up</Heading>
       <form onSubmit={handleSignup}>
         <FormControl mb={4} isRequired>
+          <FormLabel>Full Name</FormLabel>
+          <Input  
+            type="text"
+            placeholder="Jane Doe"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            >         
+          </Input>
           <FormLabel>Email</FormLabel>
           <Input
             type="email"

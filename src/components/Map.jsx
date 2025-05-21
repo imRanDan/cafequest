@@ -8,6 +8,9 @@ import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { CloseIcon } from "@chakra-ui/icons";
 import Footer from "./Footer";
+import { auth, db } from "@/config/firebase";
+import { doc, setDoc } from "firebase/firestore";
+
 
 export default function MapComponent({
   userLocation,
@@ -148,6 +151,7 @@ export default function MapComponent({
     }
   };
 
+  // Returns a clean address vs coords.
   const getFormattedAddress = (tags) => {
     if (!tags) return null;
 
@@ -169,6 +173,55 @@ export default function MapComponent({
 
     return addressParts.length > 0 ? addressParts.join(", ") : null;
   };
+
+  // longgggg handler for saving cafes and checks if user is logged in and other error handlings
+  const handleSaveCafe = async (cafe) => {
+    if (!cafe) return;
+    try{
+      setIsLoadingCafe(true);
+
+      const user = auth.currentUser;
+      if (!user) {
+        toast({
+          title: "Not logged in",
+          description: "Please log in to save cafes.",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      const docRef = doc(db, "users", user.uid, "savedCafes", cafe.id.toString());
+      await setDoc(docRef, {
+        id: cafe.id,
+        name: cafe.tags?.name || "Unnamed Cafe",
+        lat: cafe.lat,
+        lon: cafe.lon,
+        address: getFormattedAddress(cafe.tags),
+        timestamp: Date.now(),
+      });
+
+      toast({
+        title: "Saved!",
+        description: "Cafe has been added to your saved list.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error saving cafe:", error);
+      toast({
+        title: "Error saving cafe",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsLoadingCafe(false);
+    }
+  }
 
   return (
     <>
@@ -231,7 +284,7 @@ export default function MapComponent({
                 />
               </Marker>
             )}
-
+            {/* Cafe Card info on the MAP (live info) */}
             {selectedCafe && (
               <Popup
                 latitude={selectedCafe.lat}
@@ -261,6 +314,16 @@ export default function MapComponent({
                     {getFormattedAddress(selectedCafe.tags) ||
                       "Address not available"}
                   </Text>
+
+                  <Button 
+                    leftIcon={<FaHeart />}
+                    colorScheme="pink"
+                    size="sm"
+                    onClick={() => handleSaveCafe(selectedCafe)}
+                    isLoading={isLoadingCafe}
+                  >
+                    Save
+                  </Button>
 
                 </VStack>
               </Popup>

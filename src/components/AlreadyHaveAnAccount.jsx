@@ -1,6 +1,6 @@
 "use client"
 
-import { Text, Link as ChakraLink } from "@chakra-ui/react"
+import { Text} from "@chakra-ui/react"
 import NextLink from "next/link";
 
 export default function AlreadyHaveAnAccount() {
@@ -8,7 +8,7 @@ export default function AlreadyHaveAnAccount() {
         <Text fontSize='sm' mt={2}>
             Already have an account? {" "}
             <NextLink href='login' passHref>
-                <ChakraLink color='teal.500'>Log in here</ChakraLink>
+                Log in here
             </NextLink>
         </Text>
     );
