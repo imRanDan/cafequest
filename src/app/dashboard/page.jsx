@@ -8,11 +8,27 @@ import CafeCard from "@/components/CafeCard"
 import { SimpleGrid, Box, Heading } from "@chakra-ui/react";
 import {collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase"
+import { doc, getDoc} from "firebase/firestore";
 
 export default function DashboardPage() {
     const { user, loading} = useAuth();
     const router = useRouter();
     const [savedCafes, setSavedCafes] = useState([]);
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!user) return;
+            const userDocRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userDocRef);
+
+            if (docSnap.exists()) {
+                setUserData(docSnap.data());
+            }
+        };
+
+        fetchUserData()
+    }, [user])
 
     useEffect(() => {
         const fetchSaved = async () => {
@@ -38,8 +54,8 @@ export default function DashboardPage() {
         <>
         
         <div>
-            <h1>Welcome to your dashboard!</h1>
-            <p>You're logged in as {user.email}</p>
+            <h1>Your dashboard!</h1>
+            <p>Welcome back, {userData?.name || user.email}!</p>
         </div>
 
 
