@@ -75,18 +75,21 @@ export default function SignupPage() {
 
 
   return (
-    <Box maxW="md" mx="auto" mt={10} p={6} boxShadow="md" borderRadius="md">
+    <Box maxW="md" mx="auto" mt={10} p={6} boxShadow="md" borderWidth={1} borderRadius="md">
       <Heading mb={6}>Sign Up</Heading>
       <form onSubmit={handleSignup}>
         <FormControl mb={4} isRequired>
           <FormLabel>Full Name</FormLabel>
-          <Input  
-            type="text"
-            placeholder="Jane Doe"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            >         
-          </Input>
+            <Input  
+              type="text"
+              placeholder="Jane Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              >         
+            </Input>
+        </FormControl>
+
+        <FormControl mb={4} isRequired>
           <FormLabel>Email</FormLabel>
           <Input
             type="email"
