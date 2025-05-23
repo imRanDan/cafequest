@@ -28,7 +28,7 @@ export default function MapComponent({
     //     setUserCoords({ lat: 43.6532, lon: -79.3832 }); //Downtown Toronto
     //     return;
     //   }
-    // // demo ends here
+    // // demo ends here!
     
     if (typeof window !== "undefined" && navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
