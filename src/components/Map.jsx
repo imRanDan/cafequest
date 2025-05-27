@@ -174,6 +174,18 @@ export default function MapComponent({
     return addressParts.length > 0 ? addressParts.join(", ") : null;
   };
 
+  //get opening hours --TEST
+  const getOpeningHours = (tags) => {
+    return tags?.opening_hours || "Opening hours not available";
+  }
+
+  //link to google maps place search --TEST
+  const getGoogleMapsLink = (cafe) => {
+    const name = cafe.tags?.name || "Cafe";
+    const query = encodeURIComponent(`${name} near ${cafe.lat},${cafe.lon}`);
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  }
+
   // longgggg handler for saving cafes and checks if user is logged in and other error handlings
   const handleSaveCafe = async (cafe) => {
     if (!cafe) return;
@@ -195,10 +207,11 @@ export default function MapComponent({
       const docRef = doc(db, "users", user.uid, "savedCafes", cafe.id.toString());
       await setDoc(docRef, {
         id: cafe.id,
-        name: cafe.tags?.name || "Unnamed Cafe",
+        name: cafe.tags?.name,
         lat: cafe.lat,
         lon: cafe.lon,
         address: getFormattedAddress(cafe.tags),
+        openingHours: getOpeningHours,
         timestamp: Date.now(),
       });
 
@@ -314,6 +327,19 @@ export default function MapComponent({
                     {getFormattedAddress(selectedCafe.tags) ||
                       "Address not available"}
                   </Text>
+                  <Text color="gray.600" fontSize="sm">
+                    {getOpeningHours(selectedCafe.tags)}
+                  </Text>
+
+                  <Link 
+                    href={getGoogleMapsLink(selectedCafe)}
+                    color="blue.500"
+                    isExternal
+                    fontSize="sm"
+                    >
+                      View on Google Maps
+                    </Link>
+
 
                   <Button 
                     leftIcon={<FaHeart />}
@@ -349,7 +375,7 @@ export default function MapComponent({
                       }
                     }}
                   >
-                    Find cafes near me
+                    Show cafes near me
                   </Button>
         </Flex>
     </Box>
