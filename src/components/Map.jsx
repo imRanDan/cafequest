@@ -375,7 +375,7 @@ export default function MapComponent({
                       }
                     }}
                   >
-                    Find cafes near me
+                    Show cafes near me
                   </Button>
         </Flex>
     </Box>
