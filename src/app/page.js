@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Head from "next/head";
-import { Box, Center, Container, Flex, Stack, Text } from "@chakra-ui/react";
+import { Box, Center, Container, Flex, Stack, Switch, Text } from "@chakra-ui/react";
 import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
 import axios from "axios";
@@ -13,6 +13,7 @@ export default function HomePage() {
   const [searchResults, setSearchResults] = useState([]);
   const toast = useToast();
   const [hideTimHortons, setHideTimHortons] = useState(false);
+  const [hideStarbucks, setHideStarbucks] = useState(false);
 
   const lastRequestTime = useRef(0);
 
@@ -97,13 +98,6 @@ export default function HomePage() {
       } else {
         throw new Error("No cafe data received");
       }
-
-      if (hideTimHortons) {
-        cafes = cafes.filter((cafe) => {
-          const name = cafe?.tags?.name?.toLowerCase() || '';
-          return !name.includes("tim hortons");
-        })
-      }
     } catch (error) {
       toast({
         title: "Error fetching cafes",
@@ -136,9 +130,32 @@ export default function HomePage() {
         </Text>
       </Center>
 
-      <Flex justify='flex-end' w='100%' maxW='md' mb={2} align='center'>
-        <Text fontSize='sm' mr={2}>Hide Tim Hortons</Text>
-      </Flex>
+      <Stack
+  direction={{ base: "column", sm: "row" }}
+  spacing={4}
+  align="center"
+  justify="center"
+  mb={4}
+>
+  <Flex align="center">
+    <Text fontSize="sm" mr={2}>Hide Tim Hortons</Text>
+    <Switch
+      colorScheme="red"
+      isChecked={hideTimHortons}
+      onChange={() => setHideTimHortons((prev) => !prev)}
+    />
+  </Flex>
+
+  <Flex align="center">
+    <Text fontSize="sm" mr={2}>Hide Starbucks</Text>
+    <Switch
+      colorScheme="red"
+      isChecked={hideStarbucks}
+      onChange={() => setHideStarbucks((prev) => !prev)}
+    />
+  </Flex>
+</Stack>
+
 
     <Stack spacing={6} align="center" width="100%">
       {/* Search*/}
@@ -157,6 +174,8 @@ export default function HomePage() {
             results={searchResults}
             setUserLocation={setUserLocation}
             fetchCafes={fetchCafes}
+            hideTimHortons={hideTimHortons}
+            hideStarbucks={hideStarbucks}
           />
         </Box>
     </Stack>
