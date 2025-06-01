@@ -12,6 +12,7 @@ export default function HomePage() {
   const [userLocation, setUserLocation] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const toast = useToast();
+  const [hideTimHortons, setHideTimHortons] = useState(false);
 
   const lastRequestTime = useRef(0);
 
@@ -96,6 +97,13 @@ export default function HomePage() {
       } else {
         throw new Error("No cafe data received");
       }
+
+      if (hideTimHortons) {
+        cafes = cafes.filter((cafe) => {
+          const name = cafe?.tags?.name?.toLowerCase() || '';
+          return !name.includes("tim hortons");
+        })
+      }
     } catch (error) {
       toast({
         title: "Error fetching cafes",
@@ -127,6 +135,10 @@ export default function HomePage() {
           Welcome to CafeQuest ☕
         </Text>
       </Center>
+
+      <Flex justify='flex-end' w='100%' maxW='md' mb={2} align='center'>
+        <Text fontSize='sm' mr={2}>Hide Tim Hortons</Text>
+      </Flex>
 
     <Stack spacing={6} align="center" width="100%">
       {/* Search*/}
