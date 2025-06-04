@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Head from "next/head";
-import { Box, Center, Container, Flex, Stack, Switch, Text } from "@chakra-ui/react";
+ import { Box, Center, Container, Flex, Stack, Switch, Text } from "@chakra-ui/react";
 import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
 import axios from "axios";
