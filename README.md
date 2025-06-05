@@ -1,82 +1,83 @@
-# CafeQuest
+# ☕ CafeQuest
 
-## Description
+**Discover local cafes and save your favorites.**
 
-CafeQuest is a web application designed to help users discover, review, and rate local cafes. With an emphasis on providing a seamless user experience, the app allows users to find their favorite spots, leave reviews, and explore cafes through an interactive map. Whether you're a coffee aficionado or just looking for a cozy spot to work, CafeQuest connects you with hidden gems and the best places to enjoy coffee.
+CafeQuest helps you find nearby coffee spots using your current location. It’s built for people who want to explore new cafes, save places they love, and support local businesses — all through a clean, modern web interface.
 
-This project is a showcase of full-stack development, utilizing modern web technologies to create a responsive and user-friendly interface along with a scalable backend to store cafe data and user reviews.
+---
 
-## Features
+## 🚀 Features
 
-- **Cafe Discovery**: Search for cafes by location, rating, and features (e.g., Wi-Fi, pet-friendly). *(BASICS DONE)*
-- **User Reviews & Ratings**: Users can leave reviews, give star ratings, and upload photos. *(IN PROGRESS)*
-- **User Authentication**: Register, log in, and manage user profiles. *(IN PROGRESS)*
-- **Interactive Map**: View cafes on an interactive map using geolocation. *(DONE)*
-- **Favorites**: Users can save cafes to their favorites for easy access. *(IN PROGRESS)*
+- 📍 **Cafe Discovery by Location** – Find cafes near you using a location search or GPS.
+- 💾 **Save Cafes** – Bookmark cafes to your personal list when logged in.
+- 🗺️ **Map Integration** – Interactive map powered by Leaflet and OpenStreetMap.
+- 🔒 **Authentication** – Log in with Firebase Auth (Google sign-in).
+- 🌓 **Dark Mode** – Seamless theme switching with Chakra UI and Next.js.
 
-## Technologies Used
+---
 
-- **Frontend**: React.js, HTML5, CSS3, JavaScript
-- **Backend**: Node.js, Express.js, MongoDB
-- **Authentication**: JWT (JSON Web Token)
-- **Mapping & Geolocation**: OpenStreetMap, Leaflet.js
-- **API Integration**: Nominatim API (for geolocation search), Overpass API (for querying OpenStreetMap data)
-- **Database**: MongoDB with Mongoose for data modeling
-- **Deployment**: Hosted on Heroku/Netlify (or another hosting platform)
+## 🛠️ Tech Stack
 
-## Setup Instructions
+### Frontend
+- **Next.js** (App Router)
+- **React 18**
+- **Chakra UI**
+- **Leaflet** + **React-Leaflet**
+- **Framer Motion**
+- **next-themes**
 
-To run the project locally, follow these steps:
+### Backend / Services
+- **Firebase** (Auth + Firestore)
+- **Nominatim API** (location search)
+- **OpenStreetMap** + **Overpass API** (cafe data)
+
+### Utilities & Tools
+- **Axios**
+- **lodash.debounce**
+- **@react-google-maps/api** (exploring)
+- **Zustand**, **bcryptjs**, and **figlet** (installed but *not currently used*)
+
+---
+
+## 🧪 In Progress
+
+- ✅ Display saved cafes as cards
+- 🖼️ Add fallback image for cafes with no photo
+- 🔍 Search/filter for saved cafes
+- 📱 Improved mobile UX
+- 📍 "Nearby Cafes" via GPS
+- 📬 "List Your Cafe" contact form
+
+---
+
+## 📦 Getting Started (Local Dev)
 
 ### Prerequisites
 
-Ensure the following are installed:
+- Node.js 18+
+- Firebase project (Firestore + Auth enabled)
 
-- Node.js (v16 or above)
-- MongoDB (local or cloud instance)
+### Setup
 
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/CafeQuest.git
-
-2. Navigate to the project folder:
- ```bash
+```bash
+# 1. Clone the repository
+git clone https://github.com/yourusername/CafeQuest.git
 cd CafeQuest
-```
 
-3. Install dependencies for both the frontend and backend:
-
-   For the frontend:
-```bash
-cd client
+# 2. Install dependencies
 npm install
-```
 
-   For the backend:
-```bash
-    cd ../server
-    npm install
-```
-4. Set up environment variables:
+# 3. Configure environment variables
+# Create a `.env.local` file in the root and add:
 
-    Create a .env file in the /server directory with the following variables:
-```bash
-    MONGODB_URI=your_mongo_connection_string
-    JWT_SECRET=your_jwt_secret
-    PORT=5000
-```
-5. Start the application in development mode:
-```bash
-    npm run dev
-```
-    
-Open your browser and start searching for cafes!
-   - Allow location access to find cafes near you.
-   - Use the search bar to search for cafes within a 5km radius.
+NEXT_PUBLIC_FIREBASE_API_KEY=your_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
-Development Notes
+# 4. Run the app
+npm run dev
 
-    For a smooth development experience, make sure you’ve properly configured Leaflet for the client-side only (e.g., inside useEffect) to prevent errors related to SSR (Server-Side Rendering).
-    If you encounter any issues in the development environment (e.g., window is not defined), ensure all client-side code (like map initialization) is wrapped in conditionals that check for the browser environment.
