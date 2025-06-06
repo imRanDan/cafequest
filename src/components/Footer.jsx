@@ -1,71 +1,49 @@
-import {
-  Box,
-  Container,
-  SimpleGrid,
-  Stack,
-  Text,
-  Link,
-  Divider,
-  Flex,
-} from "@chakra-ui/react";
+import { Box, Flex, Link, Text, Stack, useColorModeValue } from "@chakra-ui/react";
 
 export default function Footer() {
+  const bg = useColorModeValue("gray.100", "gray.900");
+  const textColor = useColorModeValue("gray.600", "gray.400");
+  const sectionHeading = useColorModeValue("gray.800", "white");
+
   return (
-    <Box bg="gray.900" color="gray.300" mt={16}>
-      <Container as={Stack} maxW={"6xl"} py={10}>
-        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8}>
-          {/* Column 1 */}
-          <Stack align={"flex-start"}>
-            <Text fontWeight="bold" mb={2}>
-              CafeQuest
-            </Text>
-            <Link href="/landing">About</Link>
-            <Link href="/howtouse">How to Use</Link>
-          </Stack>
-
-          {/* Column 2 */}
-          <Stack align={"flex-start"}>
-            <Text fontWeight="bold" mb={2}>
-              Coming Soon
-            </Text>
-            <Text fontSize="sm" color="gray.500">
-              Terms, privacy & more
-            </Text>
-          </Stack>
-
-
-          {/* Column 3 */}
-          <Stack align={"flex-start"}>
-            <Text fontWeight="bold" mb={2}>
-              Connect
-            </Text>
-            <Link href="https://www.instagram.com/" isExternal>
-              Instagram
-            </Link>
-            <Link href="https://www.facebook.com/" isExternal>
-              Facebook
-            </Link>
-          </Stack>
-        </SimpleGrid>
-
-        <Divider my={8} borderColor="gray.700" />
-
-        {/* Bottom Row */}
-        <Flex
-          direction={{ base: "column", md: "row" }}
-          justify="space-between"
-          align="center"
-          textAlign={{ base: "center", md: "left" }}
-        >
-          <Text fontSize="sm">
-            &copy; 2025 CafeQuest. All rights reserved. Built by{" "}
-            <Link href="https://www.danyalimran.com" isExternal textDecor="underline">
-              Danyal Imran
-            </Link>
-            .
+    <Box bg={bg} py={10} px={6} mt={10}>
+      <Flex
+        direction={{ base: "column", md: "row" }}
+        justify="space-between"
+        maxW="6xl"
+        mx="auto"
+        gap={10}
+      >
+        <Stack spacing={2}>
+          <Text fontWeight="bold" color={sectionHeading}>
+            CafeQuest
           </Text>
-        </Flex>
-      </Container>
+          <Link href="/landing" color={textColor}>About</Link>
+          <Link href="/howtouse" color={textColor}>How to Use</Link>
+        </Stack>
+
+        <Stack spacing={2}>
+          <Text fontWeight="bold" color={sectionHeading}>
+            Coming Soon
+          </Text>
+          <Text color={textColor}>Terms, privacy & more</Text>
+        </Stack>
+
+        <Stack spacing={2}>
+          <Text fontWeight="bold" color={sectionHeading}>
+            Connect
+          </Text>
+          <Link href="https://instagram.com" isExternal color={textColor}>Instagram</Link>
+          <Link href="https://facebook.com" isExternal color={textColor}>Facebook</Link>
+        </Stack>
+      </Flex>
+
+      <Text textAlign="center" mt={10} fontSize="sm" color={textColor}>
+        &copy; 2025 CafeQuest. All rights reserved. Built by{" "}
+        <Link href="https://www.danyalimran.com/" isExternal color="teal.500">
+          Danyal Imran
+        </Link>.
+      </Text>
     </Box>
   );
 }

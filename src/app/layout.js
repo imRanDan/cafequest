@@ -2,6 +2,7 @@
 
 import { Providers } from "@/providers/Providers";
 import Navbar from "@/components/Navbar";
+import { Box } from "@chakra-ui/react";
 import localFont from "next/font/local";
 import {Analytics} from '@vercel/analytics/next'
 import Footer from "@/components/Footer";
@@ -30,12 +31,16 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>
-          <Navbar />
-          {children}
-          <Footer/>
-          <Analytics />
-        </Providers>
+ <Providers>
+    <Box display="flex" flexDirection="column" minH="100vh">
+      <Navbar />
+      <Box as="main" flex="1">
+        {children}
+      </Box>
+      <Footer />
+    </Box>
+      <Analytics />
+  </Providers>
       </body>
     </html>
   );
