@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Box,
@@ -14,6 +14,7 @@ import {
   Avatar,
   IconButton,
   useBreakpointValue,
+  HStack,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -38,8 +39,8 @@ export default function Navbar() {
   const handleLogout = async () => {
     await signOut(auth);
     toast({
-      title: 'Logged out successfully.',
-      status: 'info',
+      title: "Logged out successfully.",
+      status: "info",
       duration: 3000,
       isClosable: true,
     });
@@ -47,67 +48,81 @@ export default function Navbar() {
   };
 
   return (
-    <Flex
-      px={6}
-      py={4}
-      justify="space-between"
-      align="center"
-      bg="gray.800"
-      shadow="md"
-      wrap="wrap"
-    >
-      {/* Left: Brand */}
-      <Link href="/" passHref>
-        <Text fontSize="xl" fontWeight="bold" color="white" _hover={{ textDecoration: "underline" }}>
-          CafeQuest
-        </Text>
-      </Link>
-
-      {/* Right: Nav links */}
-      <Flex align="center" gap={4} flexWrap="wrap">
-        <Link href="/landing">
-          <Text fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
-            About
+    <Box bg="gray.800" py={4} shadow="sm">
+      <Flex
+        maxW="6xl"
+        mx="auto"
+        px={4}
+        align="center"
+        justify="space-between"
+        wrap="wrap"
+      >
+        {/* Left: Logo */}
+        <Link href="/" passHref>
+          <Text
+            fontSize="xl"
+            fontWeight="bold"
+            color="white"
+            _hover={{ textDecoration: "underline" }}
+          >
+            CafeQuest
           </Text>
         </Link>
 
-        <Link href="/howtouse">
-          <Text fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
-            How to Use
-          </Text>
-        </Link>
+        {/* Center: Nav links */}
+        <HStack spacing={6}>
+          <Link href="/landing">
+            <Text fontSize="md" color="white" _hover={{ textDecoration: "underline" }}>
+              About
+            </Text>
+          </Link>
+          <Link href="/howtouse">
+            <Text fontSize="md" color="white" _hover={{ textDecoration: "underline" }}>
+              How to Use
+            </Text>
+          </Link>
+        </HStack>
 
-        {loading ? (
-          <Spinner color="white" />
-        ) : user ? (
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              icon={<Avatar size="sm" name={user.email} />}
-              variant="ghost"
-              aria-label="User menu"
-            />
-            <MenuList>
-              <MenuItem as={Link} href="/dashboard">Dashboard</MenuItem>
-              <MenuItem as={Link} href="/profile">Profile</MenuItem>
-              <MenuItem onClick={handleLogout} color="red.500">Logout</MenuItem>
-            </MenuList>
-          </Menu>
-        ) : (
-          <>
-            <Link href="/login">
-              <Button colorScheme="teal" variant="outline" size="sm">
-                Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button colorScheme="teal" size="sm">
-                Sign Up
-              </Button>
-            </Link>
-          </>
-        )}
+        {/* Right: Auth/User */}
+        <Flex align="center" gap={4}>
+          {loading ? (
+            <Spinner color="white" />
+          ) : user ? (
+            <Menu>
+              <MenuButton
+                as={IconButton}
+                icon={<Avatar size="sm" name={user.email} />}
+                variant="ghost"
+                aria-label="User menu"
+              />
+              <MenuList>
+                <MenuItem as={Link} href="/dashboard">
+                  Dashboard
+                </MenuItem>
+                <MenuItem as={Link} href="/profile">
+                  Profile
+                </MenuItem>
+                <MenuItem onClick={handleLogout} color="red.500">
+                  Logout
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          ) : (
+            <>
+              <Link href="/login">
+                <Button colorScheme="teal" variant="outline" size="sm">
+                  Login
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button colorScheme="teal" size="sm">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
+        </Flex>
       </Flex>
-    </Flex>
+    </Box>
   );
 }

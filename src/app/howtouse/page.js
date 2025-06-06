@@ -1,15 +1,27 @@
-"use client"
+"use client";
 
-import { Box, Flex, Heading, Text, useColorModeValue, Divider } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  useColorModeValue,
+  Divider,
+} from "@chakra-ui/react";
+import { motion } from "framer-motion";
 
+const MotionBox = motion.create(Box);
+const MotionHeading = motion.create(Heading);
+const MotionText = motion.create(Text);
 
 export default function HowToUse() {
   const bg = useColorModeValue("gray.50", "gray.800");
   const border = useColorModeValue("gray.200", "gray.700");
+  const textColor = useColorModeValue("gray.800", "gray.100");
 
   return (
     <Flex justify="center" p={6}>
-      <Box
+      <MotionBox
         maxW="4xl"
         w="full"
         p={8}
@@ -18,49 +30,61 @@ export default function HowToUse() {
         borderWidth="1px"
         borderColor={border}
         boxShadow="md"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
       >
-        <Heading size="xl" mb={4} textAlign="center">
+        <MotionHeading
+          size="xl"
+          mb={4}
+          textAlign="center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
           How to Use CafeQuest
-        </Heading>
+        </MotionHeading>
 
         <Divider mb={6} />
 
-        <Box mb={6}>
-          <Heading size="md" mb={2}>
-            1. Enable Your Location
-          </Heading>
-          <Text>
-            CafeQuest uses your device's location to show cafes nearby. Make sure location access is allowed in your browser or device settings.
-          </Text>
-        </Box>
-
-        <Box mb={6}>
-          <Heading size="md" mb={2}>
-            2. Search by Area
-          </Heading>
-          <Text>
-            If you're planning ahead, you can search any area or city using the search bar. We'll display cafes within a 5km radius.
-          </Text>
-        </Box>
-
-        <Box mb={6}>
-          <Heading size="md" mb={2}>
-            3. Save Your Favorites
-          </Heading>
-          <Text>
-            When logged in, you can save cafes you like for easy access later. Your saved list is tied to your account — not just your device.
-          </Text>
-        </Box>
-
-        <Box>
-          <Heading size="md" mb={2}>
-            4. Explore via the Map
-          </Heading>
-          <Text>
-            Use the interactive map to click on any cafe marker and view more details. It's the fastest way to explore what’s around you.
-          </Text>
-        </Box>
-      </Box>
+        {steps.map((step, index) => (
+          <MotionBox
+            key={index}
+            mb={6}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 + index * 0.2, duration: 0.5 }}
+          >
+            <Heading size="md" mb={2} color={textColor}>
+              {step.title}
+            </Heading>
+            <Text color={textColor}>{step.description}</Text>
+          </MotionBox>
+        ))}
+      </MotionBox>
     </Flex>
   );
 }
+
+const steps = [
+  {
+    title: "1. Enable Your Location",
+    description:
+      "CafeQuest uses your device's location to show cafes nearby. Make sure location access is allowed in your browser or device settings.",
+  },
+  {
+    title: "2. Search by Area",
+    description:
+      "If you're planning ahead, you can search any area or city using the search bar. We'll display cafes within a 5km radius.",
+  },
+  {
+    title: "3. Save Your Favorites",
+    description:
+      "When logged in, you can save cafes you like for easy access later. Your saved list is tied to your account — not just your device.",
+  },
+  {
+    title: "4. Explore via the Map",
+    description:
+      "Use the interactive map to click on any cafe marker and view more details. It's the fastest way to explore what’s around you.",
+  },
+];

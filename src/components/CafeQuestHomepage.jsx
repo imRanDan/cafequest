@@ -1,4 +1,5 @@
-import React from 'react';
+"use client";
+import React from "react";
 import {
   Box,
   Button,
@@ -8,36 +9,59 @@ import {
   VStack,
   Icon,
   useColorModeValue,
-} from '@chakra-ui/react';
-import { FaCoffee, FaSearch } from 'react-icons/fa';
-import Link from 'next/link';
-import Footer from './Footer';
+} from "@chakra-ui/react";
+import { FaCoffee, FaSearch } from "react-icons/fa";
+import Link from "next/link";
+import Footer from "./Footer";
+import { motion } from "framer-motion";
+
+const MotionBox = motion.create(Box);
+const MotionVStack = motion.create(VStack);
+const MotionHeading = motion.create(Heading);
+const MotionText = motion.create(Text);
+const MotionButton = motion.create(Button);
 
 export default function CafeQuestHomepage() {
-  const bgColor = useColorModeValue('gray.300', 'gray.800');
-  const textColor = useColorModeValue('gray.800', 'gray.200');
-  const cardBgColor = useColorModeValue('gray.500', 'gray.700');
+  const bgColor = useColorModeValue("gray.300", "gray.800");
+  const textColor = useColorModeValue("gray.800", "gray.200");
+  const cardBgColor = useColorModeValue("gray.500", "gray.700");
 
   return (
     <Flex direction="column" minH="100vh" bg={bgColor}>
-
-
-      {/* Main Content */}
       <Box flex="1" py={6} px={5} textAlign="center">
-        <Heading as="h1" size="2xl" mb={4} color="brown.800">
+        <MotionHeading
+          as="h1"
+          size="2xl"
+          mb={4}
+          color="brown.800"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           Welcome to CafeQuest ☕
-        </Heading>
-        <Text fontSize="lg" color="gray.600" mb={8}>
-          Discover the best cafes around you!
-        </Text>
+        </MotionHeading>
 
-        <Box
+        <MotionText
+          fontSize="lg"
+          color="gray.600"
+          mb={8}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          Discover the best cafes around you!
+        </MotionText>
+
+        <MotionBox
           bg={cardBgColor}
           shadow="md"
           rounded="lg"
           p={6}
           mx="auto"
           maxW="4xl"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
           <Heading as="h2" size="lg" mb={4} color={textColor}>
             What is CafeQuest?
@@ -51,22 +75,28 @@ export default function CafeQuestHomepage() {
           <Text color={textColor}>
             Find great cafes in your area with our easy-to-use search!
           </Text>
-        </Box>
+        </MotionBox>
 
-        <Flex wrap="wrap" justify="center" gap={6} mt={10} mb={10}>
+        <Flex
+          wrap="wrap"
+          justify="center"
+          gap={6}
+          mt={10}
+          mb={10}
+        >
           {[
             {
               icon: FaSearch,
-              title: 'Search',
-              description: 'Search for cafes near you.',
+              title: "Search",
+              description: "Search for cafes near you.",
             },
             {
               icon: FaCoffee,
-              title: 'Explore',
-              description: 'Explore the list of cafes.',
+              title: "Explore",
+              description: "Explore the list of cafes.",
             },
           ].map((step, idx) => (
-            <VStack
+            <MotionVStack
               key={idx}
               bg={cardBgColor}
               shadow="md"
@@ -74,24 +104,36 @@ export default function CafeQuestHomepage() {
               p={4}
               minW="200px"
               textAlign="center"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + idx * 0.2, duration: 0.5 }}
             >
               <Icon as={step.icon} boxSize={8} color="brown.600" mb={4} />
               <Heading as="h3" size="md" mb={2} color={textColor}>
                 {step.title}
               </Heading>
               <Text color={textColor}>{step.description}</Text>
-            </VStack>
+            </MotionVStack>
           ))}
         </Flex>
 
         <Link href="/" passHref>
-          <Button colorScheme="teal" size="lg" mt={6} mb={10}>
+          <MotionButton
+            colorScheme="teal"
+            size="lg"
+            mt={6}
+            mb={10}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+          >
             Start Exploring
-          </Button>
+          </MotionButton>
         </Link>
       </Box>
 
-      {/* Footer */}
       <Footer />
     </Flex>
   );
