@@ -199,7 +199,7 @@ export default function HomePage() {
         </Box>
 
         {/* CTA Button (if needed) */}
-        {userLocation && (
+        {/* {userLocation && (
           <Center>
             <Button
               colorScheme="teal"
@@ -214,7 +214,7 @@ export default function HomePage() {
               Show cafes near me
             </Button>
           </Center>
-        )}
+        )} */}
       </Container>
     </>
   );
