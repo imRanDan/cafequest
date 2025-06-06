@@ -90,11 +90,20 @@ export default function Navbar() {
       </Flex>
     )}
 
-      <Link href="/landing" passHref>
-        <Text p={2} fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
-          About
-        </Text>
-      </Link>
+      <Flex>
+        <Link href="/landing" passHref>
+          <Text p={2} fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
+            About
+          </Text>
+        </Link>
+
+        <Link href="/howtouse" passHref>
+          <Text p={2} fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
+            How to Use
+          </Text>
+        </Link>
+      </Flex>
+
     
     </Flex>
   );
