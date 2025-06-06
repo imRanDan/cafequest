@@ -17,6 +17,8 @@ export default function MapComponent({
   results,
   setUserLocation,
   fetchCafes,
+  hideTimHortons,
+  hideStarbucks,
 }) {
   const [userCoords, setUserCoords] = useState(null);
 
@@ -130,7 +132,18 @@ export default function MapComponent({
   const [displayLimit, setDisplayLimit] = useState(10);
 
   //I used this for limiting results but not sure if it worked LOL
-  const limitedResults = results.slice(0, displayLimit);
+  // const limitedResults = results.slice(0, displayLimit);
+
+  const filteredResults = results.filter((cafe) => {
+    const brand = (cafe?.tags?.brand || '').toLowerCase()
+    const name = (cafe?.tags?.name || '').toLowerCase()
+
+    if (hideTimHortons && name.includes("tim hortons")) return false;
+    if (hideStarbucks && name.includes("starbucks")) return false;
+    return true;
+  });
+
+  const limitedResults = filteredResults.slice(0, displayLimit)
 
   // Handle map movement
   // Map movement handler
@@ -264,6 +277,8 @@ export default function MapComponent({
             onMove={handleMapMove}
             style={{ width: "100%", height: "100%" }}
             mapStyle="mapbox://styles/mapbox/streets-v11"
+            hideTimHortons={hideTimHortons}
+            hideStar
           >
             {limitedResults.map(
               (cafe, index) =>

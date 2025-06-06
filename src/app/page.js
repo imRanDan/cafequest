@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Head from "next/head";
-import { Box, Center, Container, Flex, Stack, Text } from "@chakra-ui/react";
+ import { Box, Center, Container, Flex, Stack, Switch, Text } from "@chakra-ui/react";
 import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
 import axios from "axios";
@@ -12,6 +12,8 @@ export default function HomePage() {
   const [userLocation, setUserLocation] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const toast = useToast();
+  const [hideTimHortons, setHideTimHortons] = useState(false);
+  const [hideStarbucks, setHideStarbucks] = useState(false);
 
   const lastRequestTime = useRef(0);
 
@@ -128,6 +130,33 @@ export default function HomePage() {
         </Text>
       </Center>
 
+      <Stack
+  direction={{ base: "column", sm: "row" }}
+  spacing={4}
+  align="center"
+  justify="center"
+  mb={4}
+>
+  <Flex align="center">
+    <Text fontSize="sm" mr={2}>Hide Tim Hortons</Text>
+    <Switch
+      colorScheme="red"
+      isChecked={hideTimHortons}
+      onChange={() => setHideTimHortons((prev) => !prev)}
+    />
+  </Flex>
+
+  <Flex align="center">
+    <Text fontSize="sm" mr={2}>Hide Starbucks</Text>
+    <Switch
+      colorScheme="red"
+      isChecked={hideStarbucks}
+      onChange={() => setHideStarbucks((prev) => !prev)}
+    />
+  </Flex>
+</Stack>
+
+
     <Stack spacing={6} align="center" width="100%">
       {/* Search*/}
       <Box w="100%" maxW="md">
@@ -145,6 +174,8 @@ export default function HomePage() {
             results={searchResults}
             setUserLocation={setUserLocation}
             fetchCafes={fetchCafes}
+            hideTimHortons={hideTimHortons}
+            hideStarbucks={hideStarbucks}
           />
         </Box>
     </Stack>
