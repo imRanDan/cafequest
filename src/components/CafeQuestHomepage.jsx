@@ -8,6 +8,7 @@ import {
   Text,
   VStack,
   Icon,
+  Container,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { FaCoffee, FaSearch } from "react-icons/fa";
@@ -28,37 +29,40 @@ export default function CafeQuestHomepage() {
 
   return (
     <Flex direction="column" minH="100vh" bg={bgColor}>
-      <Box flex="1" py={6} px={5} textAlign="center">
-        <MotionHeading
-          as="h1"
-          size="2xl"
-          mb={4}
-          color="brown.800"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          Welcome to CafeQuest ☕
-        </MotionHeading>
+      <Container maxW="6xl" py={10} px={6}>
+        {/* Heading */}
+        <Box textAlign="center" mb={10}>
+          <MotionHeading
+            as="h1"
+            size="2xl"
+            mb={4}
+            color="brown.800"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            Welcome to CafeQuest ☕
+          </MotionHeading>
 
-        <MotionText
-          fontSize="lg"
-          color="gray.600"
-          mb={8}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-        >
-          Discover the best cafes around you!
-        </MotionText>
+          <MotionText
+            fontSize="lg"
+            color="gray.400"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            Discover the best cafes around you!
+          </MotionText>
+        </Box>
 
+        {/* What & Why Section */}
         <MotionBox
           bg={cardBgColor}
           shadow="md"
           rounded="lg"
           p={6}
           mx="auto"
-          maxW="4xl"
+          maxW="3xl"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -77,12 +81,16 @@ export default function CafeQuestHomepage() {
           </Text>
         </MotionBox>
 
+        {/* Action Cards */}
         <Flex
-          wrap="wrap"
+          direction={{ base: "column", md: "row" }}
           justify="center"
+          align="stretch"
           gap={6}
           mt={10}
           mb={10}
+          maxW="4xl"
+          mx="auto"
         >
           {[
             {
@@ -96,13 +104,14 @@ export default function CafeQuestHomepage() {
               description: "Explore the list of cafes.",
             },
           ].map((step, idx) => (
-            <MotionVStack
+            <MotionBox
               key={idx}
               bg={cardBgColor}
               shadow="md"
               rounded="lg"
-              p={4}
-              minW="200px"
+              p={6}
+              flex="1"
+              minW={{ base: "100%", md: "auto" }}
               textAlign="center"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -113,26 +122,27 @@ export default function CafeQuestHomepage() {
                 {step.title}
               </Heading>
               <Text color={textColor}>{step.description}</Text>
-            </MotionVStack>
+            </MotionBox>
           ))}
         </Flex>
 
-        <Link href="/" passHref>
-          <MotionButton
-            colorScheme="teal"
-            size="lg"
-            mt={6}
-            mb={10}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-          >
-            Start Exploring
-          </MotionButton>
-        </Link>
-      </Box>
+        {/* CTA */}
+        <Box textAlign="center">
+          <Link href="/" passHref>
+            <MotionButton
+              colorScheme="teal"
+              size="lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.4 }}
+            >
+              Start Exploring
+            </MotionButton>
+          </Link>
+        </Box>
+      </Container>
 
       <Footer />
     </Flex>
