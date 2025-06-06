@@ -2,7 +2,19 @@
 
 import { useState, useRef } from "react";
 import Head from "next/head";
- import { Box, Center, Container, Flex, Stack, Switch, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Center,
+  Container,
+  Flex,
+  Stack,
+  Switch,
+  Text,
+  Heading,
+  Divider,
+  useColorModeValue,
+  Button,
+} from "@chakra-ui/react";
 import SearchBar from "../components/SearchBar";
 import Map from "../components/Map";
 import axios from "axios";
@@ -14,17 +26,17 @@ export default function HomePage() {
   const toast = useToast();
   const [hideTimHortons, setHideTimHortons] = useState(false);
   const [hideStarbucks, setHideStarbucks] = useState(false);
-
   const lastRequestTime = useRef(0);
+
+  const cardBg = useColorModeValue("gray.100", "gray.700");
 
   const cache = useRef({
     suggestions: {},
     cafes: {},
-    expirationTime: 30 * 60 * 1000, //30 minutes for info to be cached
+    expirationTime: 30 * 60 * 1000,
   });
 
-  const getCacheKey = (type, query) => `${type} - ${query}`;
-
+  const getCacheKey = (type, query) => `${type}-${query}`;
   const getFromCache = (type, query) => {
     const key = getCacheKey(type, query);
     const cached = cache.current[type][key];
@@ -58,9 +70,8 @@ export default function HomePage() {
   };
 
   const fetchCafes = async (latitude, longitude) => {
-    const cacheKey = `${latitude}, ${longitude}`;
+    const cacheKey = `${latitude},${longitude}`;
     const cachedCafes = getFromCache("cafes", cacheKey);
-
     if (cachedCafes) {
       setSearchResults(cachedCafes);
       return;
@@ -68,6 +79,7 @@ export default function HomePage() {
 
     try {
       await waitForRateLimit();
+
       const query = `
         [out:json][timeout:25];
         (
@@ -93,19 +105,20 @@ export default function HomePage() {
         }
       );
 
-      if (response.data && response.data.elements) {
+      if (response.data?.elements) {
         setSearchResults(response.data.elements);
+        setInCache("cafes", cacheKey, response.data.elements);
       } else {
         throw new Error("No cafe data received");
       }
     } catch (error) {
       toast({
         title: "Error fetching cafes",
-        description: "Could not find cafes in this area",
+        description: "Could not find cafes in this area.",
         status: "error",
         duration: 3000,
       });
-      console.error("Error fetching cafes data:", error);
+      console.error("Error fetching cafes:", error);
     }
   };
 
@@ -123,52 +136,58 @@ export default function HomePage() {
       </Head>
 
       <Container maxW="6xl" py={10}>
-        {/* Title */}
-      <Center mb={6}>
-        <Text fontSize={{ base: '2xl', md: '3xl' }} fontWeight="bold">
-          Welcome to CafeQuest ☕
-        </Text>
-      </Center>
+        {/* Heading */}
+        <Center mb={8}>
+          <Heading size="lg" textAlign="center">
+            Welcome to CafeQuest ☕
+          </Heading>
+        </Center>
 
-      <Stack
-  direction={{ base: "column", sm: "row" }}
-  spacing={4}
-  align="center"
-  justify="center"
-  mb={4}
->
-  <Flex align="center">
-    <Text fontSize="sm" mr={2}>Hide Tim Hortons</Text>
-    <Switch
-      colorScheme="red"
-      isChecked={hideTimHortons}
-      onChange={() => setHideTimHortons((prev) => !prev)}
-    />
-  </Flex>
+        {/* Controls Box */}
+        <Box
+          bg={cardBg}
+          p={6}
+          rounded="xl"
+          shadow="md"
+          maxW="lg"
+          mx="auto"
+          mb={10}
+        >
+          <Heading size="md" mb={4} color="gray.700" _dark={{ color: "gray.200" }}>
+            Search & Filters
+          </Heading>
 
-  <Flex align="center">
-    <Text fontSize="sm" mr={2}>Hide Starbucks</Text>
-    <Switch
-      colorScheme="red"
-      isChecked={hideStarbucks}
-      onChange={() => setHideStarbucks((prev) => !prev)}
-    />
-  </Flex>
-</Stack>
+          <Stack spacing={4} mb={4}>
+            <Flex justify="space-between" align="center">
+              <Text fontSize="sm">Hide Tim Hortons</Text>
+              <Switch
+                colorScheme="red"
+                isChecked={hideTimHortons}
+                onChange={() => setHideTimHortons((prev) => !prev)}
+              />
+            </Flex>
 
+            <Flex justify="space-between" align="center">
+              <Text fontSize="sm">Hide Starbucks</Text>
+              <Switch
+                colorScheme="red"
+                isChecked={hideStarbucks}
+                onChange={() => setHideStarbucks((prev) => !prev)}
+              />
+            </Flex>
+          </Stack>
 
-    <Stack spacing={6} align="center" width="100%">
-      {/* Search*/}
-      <Box w="100%" maxW="md">
-        <SearchBar
-          setUserLocation={setUserLocation}
-          setSearchResults={setSearchResults}
-          fetchCafes={fetchCafes}
-        />
-      </Box>
+          <Divider my={4} />
+
+          <SearchBar
+            setUserLocation={setUserLocation}
+            setSearchResults={setSearchResults}
+            fetchCafes={fetchCafes}
+          />
+        </Box>
 
         {/* Map */}
-        <Box w="100%" maxW="5xl">
+        <Box w="100%" maxW="6xl" mx="auto" mb={6}>
           <Map
             userLocation={userLocation}
             results={searchResults}
@@ -178,8 +197,25 @@ export default function HomePage() {
             hideStarbucks={hideStarbucks}
           />
         </Box>
-    </Stack>
-  </Container>
+
+        {/* CTA Button (if needed) */}
+        {userLocation && (
+          <Center>
+            <Button
+              colorScheme="teal"
+              size="lg"
+              rounded="xl"
+              px={8}
+              mt={4}
+              onClick={() =>
+                fetchCafes(userLocation.lat, userLocation.lon)
+              }
+            >
+              Show cafes near me
+            </Button>
+          </Center>
+        )}
+      </Container>
     </>
   );
 }
