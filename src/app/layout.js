@@ -4,6 +4,7 @@ import { Providers } from "@/providers/Providers";
 import Navbar from "@/components/Navbar";
 import localFont from "next/font/local";
 import {Analytics} from '@vercel/analytics/next'
+import Footer from "@/components/Footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <Navbar />
           {children}
+          <Footer/>
           <Analytics />
         </Providers>
       </body>

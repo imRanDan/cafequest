@@ -394,8 +394,6 @@ export default function MapComponent({
                   </Button>
         </Flex>
     </Box>
-
-        <Footer/>
       </>
   );
 }

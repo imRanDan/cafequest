@@ -15,6 +15,7 @@ import {
   IconButton,
   useBreakpointValue,
   HStack,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -27,6 +28,8 @@ export default function Navbar() {
   const [loading, setLoading] = useState(true);
   const toast = useToast();
   const router = useRouter();
+
+  const isDesktop = useBreakpointValue({ base: false, md: true });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -69,44 +72,48 @@ export default function Navbar() {
           </Text>
         </Link>
 
-        {/* Center: Nav links */}
-        <HStack spacing={6}>
-          <Link href="/landing">
-            <Text fontSize="md" color="white" _hover={{ textDecoration: "underline" }}>
-              About
-            </Text>
-          </Link>
-          <Link href="/howtouse">
-            <Text fontSize="md" color="white" _hover={{ textDecoration: "underline" }}>
-              How to Use
-            </Text>
-          </Link>
-        </HStack>
-
         {/* Right: Auth/User */}
         <Flex align="center" gap={4}>
           {loading ? (
             <Spinner color="white" />
           ) : user ? (
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                icon={<Avatar size="sm" name={user.email} />}
-                variant="ghost"
-                aria-label="User menu"
-              />
-              <MenuList>
-                <MenuItem as={Link} href="/dashboard">
-                  Dashboard
-                </MenuItem>
-                <MenuItem as={Link} href="/profile">
-                  Profile
-                </MenuItem>
-                <MenuItem onClick={handleLogout} color="red.500">
+            isDesktop ? (
+              <>
+                <Link href="/dashboard">
+                  <Button size="sm" variant="ghost" colorScheme="teal">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Link href="/profile">
+                  <Button size="sm" variant="ghost" colorScheme="teal">
+                    Profile
+                  </Button>
+                </Link>
+                <Button onClick={handleLogout} colorScheme="red" size="sm">
                   Logout
-                </MenuItem>
-              </MenuList>
-            </Menu>
+                </Button>
+              </>
+            ) : (
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  icon={<Avatar size="sm" name={user.email} />}
+                  variant="ghost"
+                  aria-label="User menu"
+                />
+                <MenuList>
+                  <MenuItem as={Link} href="/dashboard">
+                    Dashboard
+                  </MenuItem>
+                  <MenuItem as={Link} href="/profile">
+                    Profile
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout} color="red.500">
+                    Logout
+                  </MenuItem>
+                </MenuList>
+              </Menu>
+            )
           ) : (
             <>
               <Link href="/login">

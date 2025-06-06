@@ -13,7 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { FaCoffee, FaSearch } from "react-icons/fa";
 import Link from "next/link";
-import Footer from "./Footer";
 import { motion } from "framer-motion";
 
 const MotionBox = motion.create(Box);
@@ -143,8 +142,6 @@ export default function CafeQuestHomepage() {
           </Link>
         </Box>
       </Container>
-
-      <Footer />
     </Flex>
   );
 }
