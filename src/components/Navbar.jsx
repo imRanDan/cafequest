@@ -1,9 +1,22 @@
 "use client"
 
-import { Box, Flex, Button, Text, Spinner, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Button,
+  Text,
+  Spinner,
+  useToast,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
+  IconButton,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-// import { getClientAuth } from "@/config/firebase";
 import { auth } from "@/config/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -13,19 +26,15 @@ export default function Navbar() {
   const [loading, setLoading] = useState(true);
   const toast = useToast();
   const router = useRouter();
-  // const auth = getClientAuth();
 
-  //listens for auth changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
     });
-
     return () => unsubscribe();
   }, []);
 
-  //logout handler
   const handleLogout = async () => {
     await signOut(auth);
     toast({
@@ -34,77 +43,71 @@ export default function Navbar() {
       duration: 3000,
       isClosable: true,
     });
-    router.push("login");
-  }
+    router.push("/login");
+  };
 
   return (
     <Flex
       px={6}
-      py={6}
+      py={4}
       justify="space-between"
       align="center"
       bg="gray.800"
       shadow="md"
+      wrap="wrap"
     >
+      {/* Left: Brand */}
       <Link href="/" passHref>
-        <Text p={2} fontSize="xl" fontWeight="bold" color="white" _hover={{ textDecoration: "underline" }}>
+        <Text fontSize="xl" fontWeight="bold" color="white" _hover={{ textDecoration: "underline" }}>
           CafeQuest
         </Text>
       </Link>
 
-    {/* Checks if user is logged in then show logout */}
-      {loading ? (
-      <Spinner color="white" />
-    ) : user ? (
-      <Flex align="center" gap={4}>
-        <Link href="/dashboard">
-          <Button size='sm' variant='ghost' colorScheme='teal'>
-            Dashboard
-          </Button>
-        </Link>
-
-        <Link href='/profile'>
-          <Button size='sm' variant='ghost' colorScheme='teal'>
-            Profile
-          </Button>
-        </Link>
-        
-        {/* <Text color="white">Hello, {user.email}</Text> commenting this out for now   */}
-        <Button onClick={handleLogout} colorScheme="red" size="sm">
-          Logout
-        </Button>
-      </Flex>
-    ) : (
-      // If user is logged out, show login and signup buttons.
-      <Flex align="center" gap={4}>
-        <Link href="/login" passHref>
-          <Button colorScheme="teal" variant="outline" size="sm">
-            Login
-          </Button>
-        </Link>
-        <Link href="/signup" passHref>
-          <Button colorScheme="teal" size="sm">
-            Sign Up
-          </Button>
-        </Link>
-      </Flex>
-    )}
-
-      <Flex>
-        <Link href="/landing" passHref>
-          <Text p={2} fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
+      {/* Right: Nav links */}
+      <Flex align="center" gap={4} flexWrap="wrap">
+        <Link href="/landing">
+          <Text fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
             About
           </Text>
         </Link>
 
-        <Link href="/howtouse" passHref>
-          <Text p={2} fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
+        <Link href="/howtouse">
+          <Text fontSize="lg" color="white" _hover={{ textDecoration: "underline" }}>
             How to Use
           </Text>
         </Link>
-      </Flex>
 
-    
+        {loading ? (
+          <Spinner color="white" />
+        ) : user ? (
+          <Menu>
+            <MenuButton
+              as={IconButton}
+              icon={<Avatar size="sm" name={user.email} />}
+              variant="ghost"
+              aria-label="User menu"
+            />
+            <MenuList>
+              <MenuItem as={Link} href="/dashboard">Dashboard</MenuItem>
+              <MenuItem as={Link} href="/profile">Profile</MenuItem>
+              <MenuItem onClick={handleLogout} color="red.500">Logout</MenuItem>
+            </MenuList>
+          </Menu>
+        ) : (
+          <>
+            <Link href="/login">
+              <Button colorScheme="teal" variant="outline" size="sm">
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button colorScheme="teal" size="sm">
+                Sign Up
+              </Button>
+            </Link>
+          </>
+        )}
+      </Flex>
     </Flex>
   );
 }
