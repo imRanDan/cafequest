@@ -6,6 +6,8 @@ import { Box } from "@chakra-ui/react";
 import localFont from "next/font/local";
 import {Analytics} from '@vercel/analytics/next'
 import Footer from "@/components/Footer";
+import Script from "next/script";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,6 +33,10 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <Script
+          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&libraries=places`}
+          strategy="beforeInteractive"
+        />
  <Providers>
     <Box display="flex" flexDirection="column" minH="100vh">
       <Navbar />
