@@ -78,7 +78,7 @@ export default function SearchBar({
   return (
     <Stack direction="row" spacing={4}>
       <Input
-        placeholder="Enter location"
+        placeholder="Search by City, Address, or Postal Code"
         value={location}
         onChange={handleChange}
       />
