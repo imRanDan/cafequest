@@ -15,7 +15,8 @@ import {
   useColorModeValue,
   Button,
 } from "@chakra-ui/react";
-import SearchBar from "../components/SearchBar";
+// import SearchBar from "../components/SearchBar";
+import LocationSearchInput from "@/components/LocationSearchInput";
 import Map from "../components/Map";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
@@ -179,10 +180,11 @@ export default function HomePage() {
 
           <Divider my={4} />
 
-          <SearchBar
-            setUserLocation={setUserLocation}
-            setSearchResults={setSearchResults}
-            fetchCafes={fetchCafes}
+          <LocationSearchInput
+            onSelect={async ({ lat, lon}) => {
+              setUserLocation({ lat, lon});
+              await fetchCafes(lat, lon);
+            }}
           />
         </Box>
 
