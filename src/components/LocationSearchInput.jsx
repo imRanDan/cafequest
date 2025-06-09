@@ -18,7 +18,6 @@ export default function LocationSearchInput({ onSelect }) {
     clearSuggestions,
   } = usePlacesAutocomplete({
     requestOptions: {
-      componentRestrictions: { country: "ca" },
     },
     debounce: 400,
   });
