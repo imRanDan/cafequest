@@ -7,6 +7,8 @@ import {
   ListItem,
   Box,
   useColorModeValue,
+  HStack,
+  Button,
 } from "@chakra-ui/react";
 
 export default function LocationSearchInput({ onSelect }) {
@@ -41,14 +43,31 @@ export default function LocationSearchInput({ onSelect }) {
     onSelect({ lat, lon: lng });
   };
 
+  const handleManualSearch = async () => {
+    try {
+      const results = await getGeocode({ address: value});
+      const { lat, lng } = await getLatLng(results[0]);
+      onSelect({ lat, lon: lng});
+      clearSuggestions();
+    } catch (error) {
+      console.error("Error fetching location:", error);
+    }
+  }
+
   return (
     <Box position="relative">
-      <Input
-        placeholder="Search by city or postal code"
-        value={value}
-        onChange={handleInput}
-        isDisabled={!ready}
-      />
+      <HStack>
+        <Input
+          placeholder="Search by city or postal code"
+          value={value}
+          onChange={handleInput}
+          isDisabled={!ready}
+        />
+        <Button onClick={handleManualSearch} isDisabled={!value || !ready}>
+          Search
+        </Button>
+      </HStack>
+      
       {status === "OK" && (
         <List
           bg={bg}
