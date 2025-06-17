@@ -224,7 +224,7 @@ export default function MapComponent({
         lat: cafe.lat,
         lon: cafe.lon,
         address: getFormattedAddress(cafe.tags),
-        openingHours: getOpeningHours,
+        openingHours: getOpeningHours(cafe.tags),
         timestamp: Date.now(),
       });
 
