@@ -5,16 +5,19 @@ import { useAuth } from "@/utils/AuthProvider"
 import { useRouter } from "next/navigation"
 // import cafes from "@/data/cafes" no need for sample data set as cafecards show now
 import CafeCard from "@/components/CafeCard"
-import { Text, SimpleGrid, Box, Heading } from "@chakra-ui/react";
+import { Text, SimpleGrid, Box, Heading, Button, useToast } from "@chakra-ui/react";
 import {collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase"
-import { doc, getDoc} from "firebase/firestore";
+import { doc, getDoc, deleteDoc} from "firebase/firestore";
 
 export default function DashboardPage() {
     const { user, loading} = useAuth();
     const router = useRouter();
+    const toast = useToast();
     const [savedCafes, setSavedCafes] = useState([]);
     const [userData, setUserData] = useState(null);
+
+
 
     //fetches user data to load in later
     useEffect(() => {
@@ -43,6 +46,29 @@ export default function DashboardPage() {
 
         fetchSaved()
     }, [user]);
+
+
+    //Delete Cafe
+    const handleDeleteCafe = async (cafeId) => {
+        try{
+            const docRef = doc(db, "users", user.uid, "savedCafes", cafeId.toString());
+            await deleteDoc(docRef);
+
+            //Remove from the UI
+            setSavedCafes((prev) => prev.filter((cafe) => cafe.id.toString() !== cafeId.toString()));
+
+            //toast for when user deletes a cafe from their dashboard
+            toast({
+                title: "Cafe deleted",
+                status: "info",
+                duration: 3000,
+                isClosable: true,
+            });
+        } catch (error) {
+            console.error("Error deleting cafe:", error);
+        }
+    }
+
 
     
 
@@ -88,7 +114,11 @@ export default function DashboardPage() {
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3}} spacing={6}>
                 {savedCafes.map((cafe) => (
                     <CafeCard 
-                        key={cafe.id} cafe={cafe} />
+                        key={cafe.id} 
+                        cafe={cafe} 
+                        onDelete={() => handleDeleteCafe(cafe.id)}
+                    />
+                        
                 ))}
             </SimpleGrid>
         </Box>
