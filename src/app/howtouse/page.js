@@ -7,12 +7,15 @@ import {
   Text,
   useColorModeValue,
   Divider,
+  Button,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 const MotionBox = motion.create(Box);
 const MotionHeading = motion.create(Heading);
 const MotionText = motion.create(Text);
+const MotionButton = motion(Button);
 
 export default function HowToUse() {
   const bg = useColorModeValue("gray.50", "gray.800");
@@ -60,8 +63,28 @@ export default function HowToUse() {
             </Heading>
             <Text color={textColor}>{step.description}</Text>
           </MotionBox>
+
+          
         ))}
+
+                {/* CTA */}
+          <Box textAlign="center">
+            <Link href="/" passHref>
+              <MotionButton
+                colorScheme="teal"
+                size="lg"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+              >
+                Start Exploring
+              </MotionButton>
+            </Link>
+          </Box>
       </MotionBox>
+  
     </Flex>
   );
 }
