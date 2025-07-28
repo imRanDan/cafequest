@@ -176,7 +176,17 @@ export default function HomePage() {
                 onChange={() => setHideStarbucks((prev) => !prev)}
               />
             </Flex>
+
+            <Flex justify="space-between" align="center">
+              <Text fontSize="sm">Open Late Night(write this out)</Text>
+              <Switch
+                colorScheme="red"
+  
+              />
+            </Flex>
           </Stack>
+
+          
 
           <Divider my={4} />
 
@@ -199,6 +209,8 @@ export default function HomePage() {
             hideStarbucks={hideStarbucks}
           />
         </Box>
+
+        
 
         {/* CTA Button (if needed) */}
         {/* {userLocation && (
