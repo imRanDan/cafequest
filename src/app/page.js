@@ -27,6 +27,7 @@ export default function HomePage() {
   const toast = useToast();
   const [hideTimHortons, setHideTimHortons] = useState(false);
   const [hideStarbucks, setHideStarbucks] = useState(false);
+  const [openLate, setOpenLate] = useState(false);
   const lastRequestTime = useRef(0);
 
   const cardBg = useColorModeValue("gray.100", "gray.700");
@@ -178,12 +179,14 @@ export default function HomePage() {
             </Flex>
 
             <Flex justify="space-between" align="center">
-              <Text fontSize="sm">Open Late Night(write this out)</Text>
+              <Text fontSize="sm">Open late (open ≥ 9pm)</Text>
               <Switch
                 colorScheme="red"
-  
+                isChecked={openLate}
+                onChange={() => setOpenLate(v => !v)}
               />
             </Flex>
+
           </Stack>
 
           
@@ -207,6 +210,7 @@ export default function HomePage() {
             fetchCafes={fetchCafes}
             hideTimHortons={hideTimHortons}
             hideStarbucks={hideStarbucks}
+            openLate={openLate}
           />
         </Box>
 

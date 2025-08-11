@@ -19,6 +19,7 @@ export default function MapComponent({
   fetchCafes,
   hideTimHortons,
   hideStarbucks,
+  openLate,
 }) {
   const [userCoords, setUserCoords] = useState(null);
 
@@ -134,14 +135,61 @@ export default function MapComponent({
   //I used this for limiting results but not sure if it worked LOL
   // const limitedResults = results.slice(0, displayLimit);
 
+    //link to google maps place search --TEST
+  const getGoogleMapsLink = (cafe) => {
+    const name = cafe.tags?.name || "Cafe";
+    const query = encodeURIComponent(`${name} near ${cafe.lat},${cafe.lon}`);
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  }
+
+  const latestCloseMinutes = (openingHours) => {
+    if (!openingHours) return null;
+    const s = openingHours.trim()
+
+    //24/7 will mean its definitely open late
+    if (/24\s*\/\s*7/i.test(s)) return 24 * 60;
+
+    //find time ranges such as 7:00-23:00, 7:00-1:00, etc.
+    const re = /(\d{1,2})(?::?(\d{2}))?\s*-\s*(\d{1,2})(?::?(\d{2}))?/g;
+    let m, maxClose = null;
+
+    while ((m = re.exec(s)) !== null) {
+      const sh = parseInt(m[1], 10);
+      const sm = m[2] ? parseInt(m[2], 10) : 0;
+      const eh = parseInt(m[3], 10);
+      const em = m[4] ? parseInt(m[4], 10) : 0;
+
+      const start = sh * 60 + sm;
+      let end = eh * 60 + em;
+
+      //Overnight range such as 18:00-02:00 -> treat as "late"
+       if (end <= start) end += 24 * 60;
+
+       if (maxClose === null || end > maxClose) maxClose = end;
+    }
+    return maxClose;
+  }
+
+     // Is this café "open late" by our definition (≥ 21:00 closing or overnight)?
+  const isOpenLate = (tags, thresholdMinutes = 21 * 60) => {
+    const latest = latestCloseMinutes(tags?.opening_hours);
+    if (latest === null) return false;       // no data → exclude when toggle on
+    if (latest >= thresholdMinutes) return true;
+    if (latest > 24 * 60) return true;       // rolled past midnight
+    return false;
+  };
+
   const filteredResults = results.filter((cafe) => {
     const brand = (cafe?.tags?.brand || '').toLowerCase()
     const name = (cafe?.tags?.name || '').toLowerCase()
 
     if (hideTimHortons && name.includes("tim hortons")) return false;
     if (hideStarbucks && name.includes("starbucks")) return false;
+    if (openLate && !isOpenLate(cafe.tags)) return false;
     return true;
   });
+
+ 
 
   const limitedResults = filteredResults.slice(0, displayLimit)
 
@@ -192,12 +240,7 @@ export default function MapComponent({
     return tags?.opening_hours || "Opening hours not available";
   }
 
-  //link to google maps place search --TEST
-  const getGoogleMapsLink = (cafe) => {
-    const name = cafe.tags?.name || "Cafe";
-    const query = encodeURIComponent(`${name} near ${cafe.lat},${cafe.lon}`);
-    return `https://www.google.com/maps/search/?api=1&query=${query}`;
-  }
+
 
   // longgggg handler for saving cafes and checks if user is logged in and other error handlings
   const handleSaveCafe = async (cafe) => {
@@ -277,8 +320,9 @@ export default function MapComponent({
             onMove={handleMapMove}
             style={{ width: "100%", height: "100%" }}
             mapStyle="mapbox://styles/mapbox/streets-v11"
-            hideTimHortons={hideTimHortons}
-            hideStar
+            // hideTimHortons={hideTimHortons}
+            // hideStarbucks={hideStarbucks}
+            // openLate={openLate}
           >
             {limitedResults.map(
               (cafe, index) =>
