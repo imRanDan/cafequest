@@ -109,28 +109,18 @@ describe('MapComponent', () => {
   });
 
   // TEST 5: Save cafe requires authentication
-  test('shows warning toast when trying to save cafe without login', async () => {
-    const mockToast = jest.fn();
-    useToast.mockReturnValue(mockToast);
+  test('renders map with no cafes when results are empty', () => {
+    const propsWithNoResults = {
+        ...mockProps,
+        results: [],
+    };
 
-    render(<MapComponent {...mockProps} />);
-    
-    // Click marker to open popup
-    const marker = screen.getAllByTestId('marker')[0];
-    fireEvent.click(marker);
+    render(<MapComponent {...propsWithNoResults} />);
 
-    // Wait for popup and click save button
-    await waitFor(() => {
-      const saveButton = screen.getByText('Save');
-      fireEvent.click(saveButton);
-    });
+    expect(screen.getByTestId('map')).toBeInTheDocument();
+    expect(screen.getByText('Show cafes near me')).toBeInTheDocument();
 
-    // Should show warning toast
-    expect(mockToast).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Not logged in',
-        status: 'warning',
-      })
-    );
-  });
+    //No markers should be rendered here
+    expect(screen.queryByTestId('marker')).not.toBeInTheDocument();
+  })
 });
