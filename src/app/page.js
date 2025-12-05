@@ -19,7 +19,7 @@ import {
   Icon,
   IconButton,
 } from "@chakra-ui/react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaHeart, FaMapMarkerAlt, FaClock, FaExternalLinkAlt } from "react-icons/fa";
 import LocationSearchInput from "@/components/LocationSearchInput";
 import Map from "../components/Map";
@@ -40,6 +40,7 @@ export default function HomePage() {
   const [openLate, setOpenLate] = useState(false);
   const [savingCafeId, setSavingCafeId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const lastRequestTime = useRef(0);
   
   const cafesPerPage = 12;
@@ -267,7 +268,7 @@ export default function HomePage() {
             borderBottomWidth="1px"
             borderBottomColor="gray.200"
             px={{ base: 4, md: 8 }}
-            py={6}
+            py={{ base: 4, md: 6 }}
             position="sticky"
             top="64px"
             zIndex={50}
@@ -280,49 +281,66 @@ export default function HomePage() {
               gap={4}
             >
               <Box flex="1">
-                <Heading size="md" mb={4} color={orangePrimary} fontWeight="700">
-                  Search & Filters
-                </Heading>
-                <Stack spacing={3} direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }}>
-                  <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
-                    <Text fontSize="sm" fontWeight="600" color="gray.900">Hide Tim Hortons</Text>
-                    <Switch
-                      colorScheme="orange"
-                      isChecked={hideTimHortons}
-                      onChange={() => setHideTimHortons((prev) => !prev)}
-                      size="md"
-                    />
-                  </Flex>
+                <Flex justify="space-between" align="center" mb={4}>
+                  <Heading size="md" color={orangePrimary} fontWeight="700">
+                    Search & Filters
+                  </Heading>
+                  <IconButton
+                    display={{ base: "flex", md: "none" }}
+                    aria-label={isFiltersOpen ? "Hide filters" : "Show filters"}
+                    icon={isFiltersOpen ? <FaChevronUp /> : <FaChevronDown />}
+                    size="sm"
+                    variant="ghost"
+                    color={orangePrimary}
+                    onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                    _hover={{ bg: `${orangePrimary}10` }}
+                  />
+                </Flex>
+                
+                {/* Search Bar - Always Visible */}
+                <Box mb={4}>
+                  <LocationSearchInput
+                    onSelect={async ({ lat, lon}) => {
+                      setUserLocation({ lat, lon});
+                      await fetchCafes(lat, lon);
+                    }}
+                  />
+                </Box>
 
-                  <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
-                    <Text fontSize="sm" fontWeight="600" color="gray.900">Hide Starbucks</Text>
-                    <Switch
-                      colorScheme="orange"
-                      isChecked={hideStarbucks}
-                      onChange={() => setHideStarbucks((prev) => !prev)}
-                      size="md"
-                    />
-                  </Flex>
+                {/* Filters - Collapsible on Mobile */}
+                <Box display={{ base: isFiltersOpen ? "block" : "none", md: "block" }}>
+                  <Stack spacing={3} direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }}>
+                    <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+                      <Text fontSize="sm" fontWeight="600" color="gray.900">Hide Tim Hortons</Text>
+                      <Switch
+                        colorScheme="orange"
+                        isChecked={hideTimHortons}
+                        onChange={() => setHideTimHortons((prev) => !prev)}
+                        size="md"
+                      />
+                    </Flex>
 
-                  <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
-                    <Text fontSize="sm" fontWeight="600" color="gray.900">Open late (≥ 9pm)</Text>
-                    <Switch
-                      colorScheme="orange"
-                      isChecked={openLate}
-                      onChange={() => setOpenLate(v => !v)}
-                      size="md"
-                    />
-                  </Flex>
-                </Stack>
+                    <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+                      <Text fontSize="sm" fontWeight="600" color="gray.900">Hide Starbucks</Text>
+                      <Switch
+                        colorScheme="orange"
+                        isChecked={hideStarbucks}
+                        onChange={() => setHideStarbucks((prev) => !prev)}
+                        size="md"
+                      />
+                    </Flex>
 
-                <Divider my={4} />
-
-                <LocationSearchInput
-                  onSelect={async ({ lat, lon}) => {
-                    setUserLocation({ lat, lon});
-                    await fetchCafes(lat, lon);
-                  }}
-                />
+                    <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+                      <Text fontSize="sm" fontWeight="600" color="gray.900">Open late (≥ 9pm)</Text>
+                      <Switch
+                        colorScheme="orange"
+                        isChecked={openLate}
+                        onChange={() => setOpenLate(v => !v)}
+                        size="md"
+                      />
+                    </Flex>
+                  </Stack>
+                </Box>
               </Box>
             </Flex>
           </Box>

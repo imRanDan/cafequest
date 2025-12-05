@@ -62,8 +62,20 @@ export default function LocationSearchInput({ onSelect }) {
           value={value}
           onChange={handleInput}
           isDisabled={!ready}
+          bg="white"
+          color="gray.900"
+          borderColor="gray.300"
+          _placeholder={{ color: "gray.500" }}
+          _focus={{ borderColor: "#FF6B35", boxShadow: "0 0 0 1px #FF6B35" }}
         />
-        <Button onClick={handleManualSearch} isDisabled={!value || !ready}>
+        <Button 
+          onClick={handleManualSearch} 
+          isDisabled={!value || !ready}
+          bg="#FF6B35"
+          color="white"
+          _hover={{ bg: "#E55A2B" }}
+          _disabled={{ opacity: 0.4, cursor: "not-allowed" }}
+        >
           Search
         </Button>
       </HStack>

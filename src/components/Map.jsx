@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Map, { Marker, Popup } from "react-map-gl";
-import { Text, VStack, Badge, Link, Button, Icon, Flex, Box } from "@chakra-ui/react";
+import { Text, VStack, Badge, Link, Button, Icon, Flex, Box, HStack, Divider, Heading } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaMapMarkerAlt, FaClock, FaExternalLinkAlt } from "react-icons/fa";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
@@ -254,6 +254,24 @@ export default function MapComponent({
     return tags?.opening_hours || "Opening hours not available";
   }
 
+  // Format opening hours for better display
+  const formatOpeningHours = (openingHours) => {
+    if (!openingHours || openingHours === "Opening hours not available") {
+      return "Opening hours not available";
+    }
+
+    // If it's already formatted nicely, return as is
+    if (openingHours.includes(";") || openingHours.includes(",")) {
+      // Try to format OSM format like "Mo-Th 11:30-23:00; Fr 11:30-01:00; Sat 10:00-01:00; Su 10:00-23:00"
+      const parts = openingHours.split(";").map(p => p.trim()).filter(p => p);
+      if (parts.length > 0) {
+        return parts.join(" • ");
+      }
+    }
+
+    return openingHours;
+  }
+
 
 
   // longgggg handler for saving cafes and checks if user is logged in and other error handlings
@@ -391,55 +409,109 @@ export default function MapComponent({
                 latitude={selectedCafe.lat}
                 longitude={selectedCafe.lon}
                 onClose={() => setSelectedCafe(null)}
+                closeButton={false}
+                anchor="bottom"
+                offset={[0, -10]}
+                style={{
+                  padding: 0,
+                  background: "transparent",
+                  border: "none",
+                  boxShadow: "none",
+                }}
               >
-                <VStack align="start" spacing={2} position="relative" w="100%">
+                <Box
+                  position="relative"
+                  w="280px"
+                  maxW="90vw"
+                  bg="white"
+                  borderRadius="lg"
+                  boxShadow="xl"
+                  p={4}
+                  borderWidth="1px"
+                  borderColor="gray.200"
+                >
+                  {/* Close Button - Fixed positioning */}
                   <Button
                     position="absolute"
-                    right="-8px"
-                    top="-8px"
-                    size="sm"
+                    right="8px"
+                    top="8px"
+                    size="xs"
                     borderRadius="full"
-                    colorScheme="red"
+                    bg="gray.100"
+                    color="gray.600"
                     onClick={() => setSelectedCafe(null)}
-                    p={1}
-                    minW="auto"
-                    height="auto"
+                    p={0}
+                    minW="24px"
+                    h="24px"
+                    _hover={{ bg: "gray.200", color: "gray.800" }}
+                    zIndex={10}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
                   >
-                    <CloseIcon boxSize={2} />
+                    <CloseIcon boxSize={2.5} />
                   </Button>
 
-                  <Text color="gray.800" fontWeight="bold">
-                    {selectedCafe.tags?.name || "Unnamed Cafe"}
-                  </Text>
-                  <Text color="gray.800" fontSize="sm">
-                    {getFormattedAddress(selectedCafe.tags) ||
-                      "Address not available"}
-                  </Text>
-                  <Text color="gray.600" fontSize="sm">
-                    {getOpeningHours(selectedCafe.tags)}
-                  </Text>
+                  <VStack align="stretch" spacing={3} pr={8}>
+                    {/* Cafe Name */}
+                    <Heading size="md" color="gray.900" fontWeight="700" lineHeight="1.2">
+                      {selectedCafe.tags?.name || "Unnamed Cafe"}
+                    </Heading>
 
-                  <Link 
-                    href={getGoogleMapsLink(selectedCafe)}
-                    color="blue.500"
-                    isExternal
-                    fontSize="sm"
-                    >
-                      View on Google Maps
-                    </Link>
+                    {/* Address */}
+                    {getFormattedAddress(selectedCafe.tags) && (
+                      <HStack spacing={2} align="start">
+                        <Icon as={FaMapMarkerAlt} color="#FF6B35" boxSize={3.5} mt={0.5} flexShrink={0} />
+                        <Text color="gray.700" fontSize="sm" lineHeight="1.4">
+                          {getFormattedAddress(selectedCafe.tags)}
+                        </Text>
+                      </HStack>
+                    )}
 
+                    {/* Opening Hours */}
+                    <HStack spacing={2} align="start">
+                      <Icon as={FaClock} color="#FF6B35" boxSize={3.5} mt={0.5} flexShrink={0} />
+                      <Text color="gray.600" fontSize="xs" lineHeight="1.4" whiteSpace="pre-wrap">
+                        {formatOpeningHours(getOpeningHours(selectedCafe.tags))}
+                      </Text>
+                    </HStack>
 
-                  <Button 
-                    leftIcon={<FaHeart />}
-                    colorScheme="pink"
-                    size="sm"
-                    onClick={() => handleSaveCafe(selectedCafe)}
-                    isLoading={isLoadingCafe}
-                  >
-                    Save
-                  </Button>
+                    <Divider borderColor="gray.200" />
 
-                </VStack>
+                    {/* Action Buttons */}
+                    <HStack spacing={2}>
+                      <Button
+                        as="a"
+                        href={getGoogleMapsLink(selectedCafe)}
+                        target="_blank"
+                        leftIcon={<FaExternalLinkAlt />}
+                        size="sm"
+                        variant="outline"
+                        borderColor="#FF6B35"
+                        color="#FF6B35"
+                        flex={1}
+                        _hover={{ bg: "#FF6B3510", borderColor: "#E55A2B" }}
+                        fontSize="xs"
+                      >
+                        View on Maps
+                      </Button>
+
+                      <Button
+                        leftIcon={<FaHeart />}
+                        size="sm"
+                        bg="pink.400"
+                        color="white"
+                        flex={1}
+                        onClick={() => handleSaveCafe(selectedCafe)}
+                        isLoading={isLoadingCafe}
+                        _hover={{ bg: "pink.500" }}
+                        fontSize="xs"
+                      >
+                        Save
+                      </Button>
+                    </HStack>
+                  </VStack>
+                </Box>
               </Popup>
             )}
           </Map>

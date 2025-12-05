@@ -31,6 +31,19 @@ export default function RootLayout({ children }) {
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossOrigin=""
         />
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .mapboxgl-popup-content {
+              padding: 0 !important;
+              background: transparent !important;
+              border: none !important;
+              box-shadow: none !important;
+            }
+            .mapboxgl-popup-tip {
+              display: none !important;
+            }
+          `
+        }} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Script
