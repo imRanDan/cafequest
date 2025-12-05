@@ -10,10 +10,8 @@ import {
   SimpleGrid,
   Icon,
   Stack,
-  IconButton,
-  useColorMode,
 } from "@chakra-ui/react";
-import { FaMapMarkedAlt, FaHeart, FaFilter, FaClock, FaSearchLocation, FaSun, FaMoon } from "react-icons/fa";
+import { FaMapMarkedAlt, FaHeart, FaFilter, FaClock, FaSearchLocation } from "react-icons/fa";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -22,9 +20,6 @@ const MotionHeading = motion(Heading);
 const MotionText = motion(Text);
 
 export default function CafeQuestHomepage() {
-  const { colorMode, toggleColorMode } = useColorMode();
-  const isDark = colorMode === "dark";
-  
   // Bright orange theme - always vibrant
   const orangePrimary = "#FF6B35";
   const orangeLight = "#FF8C42";
@@ -60,23 +55,6 @@ export default function CafeQuestHomepage() {
 
   return (
     <Box bg="white" minH="100vh" position="relative">
-      {/* Theme Toggle - Floating Button */}
-      <IconButton
-        aria-label="Toggle theme"
-        icon={isDark ? <FaSun /> : <FaMoon />}
-        onClick={toggleColorMode}
-        position="fixed"
-        top={4}
-        right={4}
-        zIndex={1000}
-        bg={orangePrimary}
-        color="white"
-        _hover={{ bg: orangeDark, transform: "scale(1.1)" }}
-        borderRadius="full"
-        boxShadow="lg"
-        size="lg"
-      />
-
       {/* Hero Section - Bright Orange */}
       <Box
         bg={orangePrimary}
