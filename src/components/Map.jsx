@@ -20,6 +20,8 @@ export default function MapComponent({
   hideTimHortons,
   hideStarbucks,
   openLate,
+  selectedCafeId,
+  onCafeClick,
 }) {
   const [userCoords, setUserCoords] = useState(null);
 
@@ -129,6 +131,18 @@ export default function MapComponent({
 
   
   const [selectedCafe, setSelectedCafe] = useState(null);
+
+  // Sync selectedCafe with selectedCafeId prop
+  useEffect(() => {
+    if (selectedCafeId && results.length > 0) {
+      const cafe = results.find(c => c.id === selectedCafeId);
+      if (cafe) {
+        setSelectedCafe(cafe);
+      }
+    } else if (!selectedCafeId) {
+      setSelectedCafe(null);
+    }
+  }, [selectedCafeId, results]);
 
   const [displayLimit, setDisplayLimit] = useState(10);
 
@@ -293,10 +307,7 @@ export default function MapComponent({
   }
 
   return (
-    <>
-
-  <Box w="100%" maxW="6xl" mx="auto" px={4} mb={6}>
-    <Box borderRadius="md" overflow="hidden" boxShadow="md" w="100%" h={["60vh", "500px"]} position="relative"> 
+    <Box w="100%" h="100%" position="relative"> 
           {isLoading && (
             <div
               style={{
@@ -335,9 +346,27 @@ export default function MapComponent({
                     onClick={(e) => {
                       e.originalEvent.stopPropagation();
                       setSelectedCafe(cafe);
+                      if (onCafeClick) {
+                        onCafeClick(cafe);
+                      }
                     }}
                   >
-                    <Image src={icon.url} alt="Marker" width={25} height={41} />
+                    <Box
+                      position="relative"
+                      transform={selectedCafeId === cafe.id ? "scale(1.3)" : "scale(1)"}
+                      transition="transform 0.2s"
+                      zIndex={selectedCafeId === cafe.id ? 1000 : 1}
+                    >
+                      <Image 
+                        src={icon.url} 
+                        alt="Marker" 
+                        width={selectedCafeId === cafe.id ? 30 : 25} 
+                        height={selectedCafeId === cafe.id ? 49 : 41}
+                        style={{
+                          filter: selectedCafeId === cafe.id ? "drop-shadow(0 0 8px #FF6B35)" : "none"
+                        }}
+                      />
+                    </Box>
                   </Marker>
                 )
             )}
@@ -414,30 +443,42 @@ export default function MapComponent({
               </Popup>
             )}
           </Map>
-        </Box>
 
-        <Flex justify="center" mt={4}>
-                  <Button
-                    colorScheme="teal"
-                    onClick={() => {
-                      if (userCoords?.lat && userCoords?.lon) {
-                        // Trigger SearchBar's logic from here
-                        fetchCafes(userCoords.lat, userCoords.lon); // You need to lift this up to parent first
-                        setUserLocation({ lat: userCoords.lat, lon: userCoords.lon });
-                      } else {
-                        toast({
-                          title: "Location not available",
-                          description: "Make sure location is enabled",
-                          status: "error",
-                          duration: 3000,
-                        });
-                      }
-                    }}
-                  >
-                    Show cafes near me
-                  </Button>
-        </Flex>
+      {/* Show cafes near me button - floating */}
+      {!userLocation && userCoords && (
+        <Box
+          position="absolute"
+          bottom={4}
+          left="50%"
+          transform="translateX(-50%)"
+          zIndex={1000}
+        >
+          <Button
+            bg="#FF6B35"
+            color="white"
+            fontWeight="700"
+            borderRadius="full"
+            px={6}
+            onClick={() => {
+              if (userCoords?.lat && userCoords?.lon) {
+                fetchCafes(userCoords.lat, userCoords.lon);
+                setUserLocation({ lat: userCoords.lat, lon: userCoords.lon });
+              } else {
+                toast({
+                  title: "Location not available",
+                  description: "Make sure location is enabled",
+                  status: "error",
+                  duration: 3000,
+                });
+              }
+            }}
+            _hover={{ bg: "#E55A2B", transform: "translateX(-50%) translateY(-2px)" }}
+            boxShadow="xl"
+          >
+            Show cafes near me
+          </Button>
+        </Box>
+      )}
     </Box>
-      </>
   );
 }

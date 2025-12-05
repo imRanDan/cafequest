@@ -31,6 +31,10 @@ export default function Navbar() {
 
   const isDesktop = useBreakpointValue({ base: false, md: true });
 
+  // Bright orange theme
+  const orangePrimary = "#FF6B35";
+  const orangeDark = "#E55A2B";
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -51,45 +55,124 @@ export default function Navbar() {
   };
 
   return (
-    <Box bg="gray.800" py={4} shadow="sm">
+    <Box 
+      bg="white" 
+      py={4} 
+      borderBottomWidth="1px"
+      borderBottomColor="gray.200"
+      shadow="sm"
+      position="sticky"
+      top={0}
+      zIndex={100}
+    >
       <Flex
-        maxW="6xl"
+        maxW="7xl"
         mx="auto"
-        px={4}
+        px={{ base: 4, md: 8 }}
         align="center"
         justify="space-between"
         wrap="wrap"
       >
-        {/* Left: Logo */}
-        <Link href="/" passHref>
-          <Text
-            fontSize="xl"
-            fontWeight="bold"
-            color="white"
-            _hover={{ textDecoration: "underline" }}
-          >
-            CafeQuest
-          </Text>
-        </Link>
+        {/* Left: Logo & Nav */}
+        <Flex align="center" gap={{ base: 4, md: 8 }}>
+          <Link href="/landing" passHref>
+            <Text
+              fontSize={{ base: "xl", md: "2xl" }}
+              fontWeight="900"
+              color={orangePrimary}
+              _hover={{ 
+                color: orangeDark,
+                transform: "scale(1.05)",
+                transition: "all 0.2s"
+              }}
+              cursor="pointer"
+              letterSpacing="-0.02em"
+            >
+              ☕ CafeQuest
+            </Text>
+          </Link>
+          <HStack spacing={6} display={{ base: "none", md: "flex" }}>
+            <Link href="/" passHref>
+              <ChakraLink 
+                color="gray.700" 
+                fontWeight="600"
+                fontSize="md"
+                _hover={{ 
+                  color: orangePrimary,
+                  textDecoration: "none"
+                }}
+                transition="color 0.2s"
+              >
+                Explore
+              </ChakraLink>
+            </Link>
+            <Link href="/howtouse" passHref>
+              <ChakraLink 
+                color="gray.700" 
+                fontWeight="600"
+                fontSize="md"
+                _hover={{ 
+                  color: orangePrimary,
+                  textDecoration: "none"
+                }}
+                transition="color 0.2s"
+              >
+                How It Works
+              </ChakraLink>
+            </Link>
+          </HStack>
+        </Flex>
 
         {/* Right: Auth/User */}
-        <Flex align="center" gap={4}>
+        <Flex align="center" gap={3}>
           {loading ? (
-            <Spinner color="white" />
+            <Spinner color={orangePrimary} size="sm" />
           ) : user ? (
             isDesktop ? (
               <>
                 <Link href="/dashboard">
-                  <Button size="sm" variant="ghost" colorScheme="teal">
+                  <Button 
+                    size="md" 
+                    variant="ghost" 
+                    color="gray.700"
+                    fontWeight="600"
+                    _hover={{ 
+                      bg: `${orangePrimary}10`,
+                      color: orangePrimary
+                    }}
+                  >
                     Dashboard
                   </Button>
                 </Link>
                 <Link href="/profile">
-                  <Button size="sm" variant="ghost" colorScheme="teal">
+                  <Button 
+                    size="md" 
+                    variant="ghost"
+                    color="gray.700"
+                    fontWeight="600"
+                    _hover={{ 
+                      bg: `${orangePrimary}10`,
+                      color: orangePrimary
+                    }}
+                  >
                     Profile
                   </Button>
                 </Link>
-                <Button onClick={handleLogout} colorScheme="red" size="sm">
+                <Button 
+                  onClick={handleLogout} 
+                  bg={orangePrimary}
+                  color="white"
+                  size="md"
+                  fontWeight="700"
+                  borderRadius="full"
+                  px={6}
+                  _hover={{ 
+                    bg: orangeDark,
+                    transform: "translateY(-2px)",
+                    boxShadow: "lg"
+                  }}
+                  transition="all 0.2s"
+                >
                   Logout
                 </Button>
               </>
@@ -97,18 +180,31 @@ export default function Navbar() {
               <Menu>
                 <MenuButton
                   as={IconButton}
-                  icon={<Avatar size="sm" name={user.email} />}
+                  icon={<Avatar size="sm" name={user.email} bg={orangePrimary} />}
                   variant="ghost"
                   aria-label="User menu"
+                  _hover={{ bg: `${orangePrimary}10` }}
                 />
-                <MenuList>
-                  <MenuItem as={Link} href="/dashboard">
+                <MenuList borderColor="gray.200" shadow="xl">
+                  <MenuItem 
+                    as={Link} 
+                    href="/dashboard"
+                    _hover={{ bg: `${orangePrimary}10`, color: orangePrimary }}
+                  >
                     Dashboard
                   </MenuItem>
-                  <MenuItem as={Link} href="/profile">
+                  <MenuItem 
+                    as={Link} 
+                    href="/profile"
+                    _hover={{ bg: `${orangePrimary}10`, color: orangePrimary }}
+                  >
                     Profile
                   </MenuItem>
-                  <MenuItem onClick={handleLogout} color="red.500">
+                  <MenuItem 
+                    onClick={handleLogout} 
+                    color="red.500"
+                    _hover={{ bg: "red.50" }}
+                  >
                     Logout
                   </MenuItem>
                 </MenuList>
@@ -117,12 +213,39 @@ export default function Navbar() {
           ) : (
             <>
               <Link href="/login">
-                <Button colorScheme="teal" variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  borderColor="gray.300"
+                  color="gray.700"
+                  size="md"
+                  fontWeight="600"
+                  borderRadius="full"
+                  px={6}
+                  _hover={{ 
+                    borderColor: orangePrimary,
+                    color: orangePrimary,
+                    bg: `${orangePrimary}05`
+                  }}
+                  transition="all 0.2s"
+                >
                   Login
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button colorScheme="teal" size="sm">
+                <Button 
+                  bg={orangePrimary}
+                  color="white"
+                  size="md"
+                  fontWeight="700"
+                  borderRadius="full"
+                  px={6}
+                  _hover={{ 
+                    bg: orangeDark,
+                    transform: "translateY(-2px)",
+                    boxShadow: "lg"
+                  }}
+                  transition="all 0.2s"
+                >
                   Sign Up
                 </Button>
               </Link>
