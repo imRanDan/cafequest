@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "@/utils/AuthProvider"
 import { useRouter } from "next/navigation"
-// import cafes from "@/data/cafes" no need for sample data set as cafecards show now
 import CafeCard from "@/components/CafeCard"
-import { Text, SimpleGrid, Box, Heading, Button, useToast } from "@chakra-ui/react";
+import { Text, SimpleGrid, Box, Heading, Container } from "@chakra-ui/react";
 import {collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebase"
 import { doc, getDoc, deleteDoc} from "firebase/firestore";
+import { useToast } from "@chakra-ui/react";
+
+const orangePrimary = "#FF6B35";
 
 export default function DashboardPage() {
     const { user, loading} = useAuth();
@@ -17,9 +19,6 @@ export default function DashboardPage() {
     const [savedCafes, setSavedCafes] = useState([]);
     const [userData, setUserData] = useState(null);
 
-
-
-    //fetches user data to load in later
     useEffect(() => {
         const fetchUserData = async () => {
             if (!user) return;
@@ -30,11 +29,9 @@ export default function DashboardPage() {
                 setUserData(docSnap.data());
             }
         };
-
         fetchUserData()
     }, [user])
 
-    //fetches saved cafe data to load in to the dash
     useEffect(() => {
         const fetchSaved = async () => {
             if (!user) return;
@@ -43,21 +40,14 @@ export default function DashboardPage() {
             const cafes = snapshot.docs.map(doc => doc.data());
             setSavedCafes(cafes);
         }
-
         fetchSaved()
     }, [user]);
 
-
-    //Delete Cafe
     const handleDeleteCafe = async (cafeId) => {
         try{
             const docRef = doc(db, "users", user.uid, "savedCafes", cafeId.toString());
             await deleteDoc(docRef);
-
-            //Remove from the UI
             setSavedCafes((prev) => prev.filter((cafe) => cafe.id.toString() !== cafeId.toString()));
-
-            //toast for when user deletes a cafe from their dashboard
             toast({
                 title: "Cafe deleted",
                 status: "info",
@@ -69,23 +59,6 @@ export default function DashboardPage() {
         }
     }
 
-
-    
-
-// 🔒 TEST: Unauthenticated Firestore access (leave this commented unless testing)
-//     useEffect(() => {
-//         const testAccess = async () => {
-//             try {
-//             const snapshot = await getDocs(collection(db, "users"));
-//             console.log("Unprotected access succeeded:", snapshot.docs.length);
-//             } catch (err) {
-//             console.error("🔒 Firebase permission error (expected):", err.message);
-//             }
-//         };
-//   testAccess();
-// }, []);
-
-    // Checks if user is logged in before loading a dash, will redirect unauthorized users to log in
     useEffect(() => {
         if (!loading && !user ) {
             router.push("/login");
@@ -95,34 +68,38 @@ export default function DashboardPage() {
     if (loading || !user ) return <p>Loading...</p>;
 
     return (
-        <>
-        
-        <Box textAlign="center" mt={10} mb={6}>
-            <Heading as="h2" size="lg" mb={2}>
-                Welcome to your dashboard ☕️
-            </Heading>
-            <Text fontSize="md" color="gray.600">
-                {userData?.fullName
-                ? `Welcome back, ${userData.fullName}!`
-                : `Welcome back, ${user.email}`}
-            </Text>
+        <Box bg="white" minH="calc(100vh - 64px)" py={12}>
+            <Container maxW="7xl">
+                <Box textAlign="center" mb={10}>
+                    <Heading as="h2" size="xl" mb={2} color={orangePrimary} fontWeight="800">
+                        Welcome to your dashboard ☕️
+                    </Heading>
+                    <Text fontSize="lg" color="gray.600">
+                        {userData?.fullName
+                        ? `Welcome back, ${userData.fullName}!`
+                        : `Welcome back, ${user.email}`}
+                    </Text>
+                </Box>
+
+                <Box>
+                    <Heading mb={6} color="gray.900" fontWeight="700">Your Saved Cafes</Heading>
+                    {savedCafes.length === 0 ? (
+                        <Box textAlign="center" py={12} bg="gray.50" borderRadius="xl" borderWidth="1px" borderColor="gray.200">
+                            <Text color="gray.500" fontSize="lg">No saved cafes yet. Start exploring and save your favorites!</Text>
+                        </Box>
+                    ) : (
+                        <SimpleGrid columns={{ base: 1, md: 2, lg: 3}} spacing={6}>
+                            {savedCafes.map((cafe) => (
+                                <CafeCard 
+                                    key={cafe.id} 
+                                    cafe={cafe} 
+                                    onDelete={() => handleDeleteCafe(cafe.id)}
+                                />
+                            ))}
+                        </SimpleGrid>
+                    )}
+                </Box>
+            </Container>
         </Box>
-
-
-        <Box p={6}>
-            <Heading mb={4}>Your Saved Cafes</Heading>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3}} spacing={6}>
-                {savedCafes.map((cafe) => (
-                    <CafeCard 
-                        key={cafe.id} 
-                        cafe={cafe} 
-                        onDelete={() => handleDeleteCafe(cafe.id)}
-                    />
-                        
-                ))}
-            </SimpleGrid>
-        </Box>
-        </>
-
     )
 }

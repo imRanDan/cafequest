@@ -8,7 +8,8 @@ import {
   FormLabel,
   Input,
   Heading,
-  Text
+  Text,
+  Container
 } from '@chakra-ui/react';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '@/config/firebase';
@@ -18,6 +19,8 @@ import { useEffect } from 'react';
 import { useAuth } from '@/utils/AuthProvider';
 import AlreadyHaveAnAccount from '@/components/AlreadyHaveAnAccount';
 import { doc, setDoc } from 'firebase/firestore';
+
+const orangePrimary = "#FF6B35";
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
@@ -33,7 +36,6 @@ export default function SignupPage() {
     setError('');
 
     try {
-      // const auth = getClientAuth(); // 👈 safe for client
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -43,7 +45,6 @@ export default function SignupPage() {
         createdAt: new Date().toISOString(),
       })
 
-      //Save the users name + email to Firestore
       toast({
         title: 'Account successfully created.',
         description: "You've successfully signed up!",
@@ -52,7 +53,7 @@ export default function SignupPage() {
         isClosable: true,
       })
 
-      router.push('/'); // or wherever post-signup but for now it pushes you to /
+      router.push('/');
     } catch (err) {
       toast({
         title: 'Signup failed',
@@ -72,48 +73,80 @@ export default function SignupPage() {
 
   if (loading || user) return null;
 
-
-
   return (
-    <Box maxW="md" mx="auto" mt={10} p={6} boxShadow="md" borderWidth={1} borderRadius="md">
-      <Heading mb={6}>Sign Up</Heading>
-      <form onSubmit={handleSignup}>
-        <FormControl mb={4} isRequired>
-          <FormLabel>Full Name</FormLabel>
-            <Input  
-              type="text"
-              placeholder="Jane Doe"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              >         
-            </Input>
-        </FormControl>
+    <Box bg="white" minH="calc(100vh - 64px)" py={12}>
+      <Container maxW="md">
+        <Box 
+          mx="auto" 
+          p={8} 
+          bg="white"
+          borderWidth="1px" 
+          borderColor="gray.200"
+          borderRadius="xl"
+          boxShadow="lg"
+        >
+          <Heading mb={6} color={orangePrimary} fontWeight="800">Sign Up</Heading>
+          <form onSubmit={handleSignup}>
+            <FormControl mb={4} isRequired>
+              <FormLabel color="gray.900" fontWeight="600">Full Name</FormLabel>
+              <Input  
+                type="text"
+                placeholder="Jane Doe"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                bg="white"
+                color="gray.900"
+                borderColor="gray.300"
+                _focus={{ borderColor: orangePrimary, boxShadow: `0 0 0 1px ${orangePrimary}` }}
+                _placeholder={{ color: "gray.400" }}
+              />         
+            </FormControl>
 
-        <FormControl mb={4} isRequired>
-          <FormLabel>Email</FormLabel>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </FormControl>
+            <FormControl mb={4} isRequired>
+              <FormLabel color="gray.900" fontWeight="600">Email</FormLabel>
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                bg="white"
+                color="gray.900"
+                borderColor="gray.300"
+                _focus={{ borderColor: orangePrimary, boxShadow: `0 0 0 1px ${orangePrimary}` }}
+                _placeholder={{ color: "gray.400" }}
+              />
+            </FormControl>
 
-        <FormControl mb={4} isRequired>
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </FormControl>
+            <FormControl mb={4} isRequired>
+              <FormLabel color="gray.900" fontWeight="600">Password</FormLabel>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                bg="white"
+                color="gray.900"
+                borderColor="gray.300"
+                _focus={{ borderColor: orangePrimary, boxShadow: `0 0 0 1px ${orangePrimary}` }}
+                _placeholder={{ color: "gray.400" }}
+              />
+            </FormControl>
 
-        {error && <Text color="red.500" mb={4}>{error}</Text>}
+            {error && <Text color="red.500" mb={4}>{error}</Text>}
 
-        <Button colorScheme="teal" type="submit" w="full">
-          Sign Up
-        </Button>
-      </form>
-      <AlreadyHaveAnAccount />
+            <Button 
+              bg={orangePrimary}
+              color="white"
+              type="submit" 
+              w="full"
+              fontWeight="700"
+              _hover={{ bg: "#E55A2B" }}
+              mb={4}
+            >
+              Sign Up
+            </Button>
+          </form>
+          <AlreadyHaveAnAccount />
+        </Box>
+      </Container>
     </Box>
   );
 }

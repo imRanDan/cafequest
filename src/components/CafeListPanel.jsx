@@ -8,7 +8,6 @@ import {
   HStack,
   Button,
   Icon,
-  Divider,
   useBreakpointValue,
   Drawer,
   DrawerBody,
@@ -16,10 +15,9 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
-  useDisclosure,
   IconButton,
 } from "@chakra-ui/react";
-import { FaHeart, FaMapMarkerAlt, FaClock, FaExternalLinkAlt } from "react-icons/fa";
+import { FaHeart, FaMapMarkerAlt, FaClock, FaExternalLinkAlt, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { auth, db } from "@/config/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { useToast } from "@chakra-ui/react";
@@ -59,7 +57,9 @@ export default function CafeListPanel({
   onCafeClick, 
   selectedCafeId,
   isOpen,
-  onClose 
+  onClose,
+  isCollapsed,
+  onToggleCollapse
 }) {
   const toast = useToast();
   const [savingCafeId, setSavingCafeId] = React.useState(null);
@@ -120,37 +120,36 @@ export default function CafeListPanel({
 
     return (
       <Box
-        p={5}
-        borderRadius="xl"
-        borderWidth="2px"
+        p={4}
+        borderRadius="lg"
+        borderWidth="1px"
         borderColor={isSelected ? orangePrimary : "gray.200"}
         bg={isSelected ? `${orangePrimary}05` : "white"}
         cursor="pointer"
         _hover={{
           borderColor: orangePrimary,
           bg: `${orangePrimary}08`,
-          transform: "translateY(-2px)",
-          boxShadow: "md",
         }}
         transition="all 0.2s"
         onClick={() => onCafeClick(cafe)}
       >
-        <VStack align="stretch" spacing={3}>
+        <VStack align="stretch" spacing={2}>
           <HStack justify="space-between" align="start">
-            <Heading size="md" color="gray.900" fontWeight="700">
+            <Heading size="sm" color="gray.900" fontWeight="700" flex="1">
               {cafe.tags?.name || "Unnamed Cafe"}
             </Heading>
             <Button
-              size="sm"
+              size="xs"
               leftIcon={<FaHeart />}
-              colorScheme="pink"
-              variant="ghost"
+              variant="outline"
+              borderColor="pink.400"
+              color="pink.500"
               onClick={(e) => {
                 e.stopPropagation();
                 handleSaveCafe(cafe);
               }}
               isLoading={savingCafeId === cafe.id}
-              _hover={{ bg: "pink.50" }}
+              _hover={{ bg: "pink.50", borderColor: "pink.500" }}
             >
               Save
             </Button>
@@ -158,32 +157,31 @@ export default function CafeListPanel({
 
           {address && (
             <HStack spacing={2} color="gray.600">
-              <Icon as={FaMapMarkerAlt} color={orangePrimary} boxSize={4} />
-              <Text fontSize="sm">{address}</Text>
+              <Icon as={FaMapMarkerAlt} color={orangePrimary} boxSize={3} />
+              <Text fontSize="xs">{address}</Text>
             </HStack>
           )}
 
           <HStack spacing={2} color="gray.600">
-            <Icon as={FaClock} color={orangePrimary} boxSize={4} />
-            <Text fontSize="sm">{hours}</Text>
+            <Icon as={FaClock} color={orangePrimary} boxSize={3} />
+            <Text fontSize="xs" noOfLines={1}>{hours}</Text>
           </HStack>
 
-          <HStack spacing={3} pt={2}>
-            <Button
-              size="sm"
-              variant="outline"
-              leftIcon={<FaExternalLinkAlt />}
-              as="a"
-              href={getGoogleMapsLink(cafe)}
-              target="_blank"
-              onClick={(e) => e.stopPropagation()}
-              borderColor={orangePrimary}
-              color={orangePrimary}
-              _hover={{ bg: `${orangePrimary}10` }}
-            >
-              View on Maps
-            </Button>
-          </HStack>
+          <Button
+            size="xs"
+            variant="outline"
+            leftIcon={<FaExternalLinkAlt />}
+            as="a"
+            href={getGoogleMapsLink(cafe)}
+            target="_blank"
+            onClick={(e) => e.stopPropagation()}
+            borderColor={orangePrimary}
+            color={orangePrimary}
+            _hover={{ bg: `${orangePrimary}10` }}
+            mt={1}
+          >
+            View on Maps
+          </Button>
         </VStack>
       </Box>
     );
@@ -191,25 +189,47 @@ export default function CafeListPanel({
 
   const PanelContent = () => (
     <Box h="100%" bg="white" overflowY="auto">
-      <Box p={6} borderBottomWidth="1px" borderBottomColor="gray.200" position="sticky" top={0} bg="white" zIndex={10}>
-        <Heading size="lg" color="gray.900" fontWeight="800" mb={2}>
-          Nearby Cafes
-        </Heading>
-        <Text color="gray.600" fontSize="sm">
-          {cafes.length} {cafes.length === 1 ? "cafe" : "cafes"} found
-        </Text>
+      <Box 
+        p={4} 
+        borderBottomWidth="1px" 
+        borderBottomColor="gray.200" 
+        position="sticky" 
+        top={0} 
+        bg="white" 
+        zIndex={10}
+      >
+        <HStack justify="space-between" align="center">
+          <Box>
+            <Heading size="md" color={orangePrimary} fontWeight="800" mb={1}>
+              Nearby Cafes
+            </Heading>
+            <Text color="gray.600" fontSize="xs">
+              {cafes.length} {cafes.length === 1 ? "cafe" : "cafes"} found
+            </Text>
+          </Box>
+          {!isMobile && (
+            <IconButton
+              aria-label="Collapse panel"
+              icon={isCollapsed ? <FaChevronLeft /> : <FaChevronRight />}
+              size="sm"
+              variant="ghost"
+              onClick={onToggleCollapse}
+              color={orangePrimary}
+            />
+          )}
+        </HStack>
       </Box>
 
-      <VStack spacing={4} p={6} align="stretch">
+      <VStack spacing={3} p={4} align="stretch">
         {cafes.length === 0 ? (
-          <Box textAlign="center" py={12}>
-            <Text color="gray.500" fontSize="lg">
+          <Box textAlign="center" py={8}>
+            <Text color="gray.500" fontSize="sm">
               No cafes found. Try searching a different location!
             </Text>
           </Box>
         ) : (
-          cafes.map((cafe) => (
-            <CafeCard key={cafe.id} cafe={cafe} />
+          cafes.map((cafe, index) => (
+            <CafeCard key={`${cafe.id}-${cafe.lat}-${cafe.lon}-${index}`} cafe={cafe} />
           ))
         )}
       </VStack>
@@ -224,20 +244,20 @@ export default function CafeListPanel({
         <DrawerContent borderTopRadius="2xl">
           <DrawerCloseButton />
           <DrawerHeader borderBottomWidth="1px">
-            <Heading size="lg">Nearby Cafes</Heading>
+            <Heading size="lg" color={orangePrimary}>Nearby Cafes</Heading>
             <Text color="gray.600" fontSize="sm" mt={1}>
               {cafes.length} {cafes.length === 1 ? "cafe" : "cafes"} found
             </Text>
           </DrawerHeader>
           <DrawerBody p={0}>
-            <VStack spacing={4} p={4} align="stretch">
+            <VStack spacing={3} p={4} align="stretch">
               {cafes.length === 0 ? (
                 <Box textAlign="center" py={12}>
                   <Text color="gray.500">No cafes found.</Text>
                 </Box>
               ) : (
-                cafes.map((cafe) => (
-                  <CafeCard key={cafe.id} cafe={cafe} />
+                cafes.map((cafe, index) => (
+                  <CafeCard key={`${cafe.id}-${cafe.lat}-${cafe.lon}-${index}`} cafe={cafe} />
                 ))
               )}
             </VStack>
@@ -250,14 +270,31 @@ export default function CafeListPanel({
   // Desktop/Tablet: Side Panel
   return (
     <Box
-      w={{ base: "100%", md: "400px", lg: "450px" }}
+      w={isCollapsed ? "60px" : { base: "100%", md: "380px", lg: "420px" }}
       h="100%"
       borderLeftWidth="1px"
       borderLeftColor="gray.200"
       bg="white"
+      transition="width 0.3s"
+      position="relative"
     >
-      <PanelContent />
+      {isCollapsed ? (
+        <Box h="100%" display="flex" alignItems="center" justifyContent="center" p={2}>
+          <IconButton
+            aria-label="Expand panel"
+            icon={<FaChevronLeft />}
+            size="md"
+            variant="ghost"
+            onClick={onToggleCollapse}
+            color={orangePrimary}
+            transform="rotate(180deg)"
+          />
+        </Box>
+      ) : (
+        <>
+          <PanelContent />
+        </>
+      )}
     </Box>
   );
 }
-

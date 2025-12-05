@@ -15,7 +15,6 @@ import {
   IconButton,
   useBreakpointValue,
   HStack,
-  Link as ChakraLink,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -92,33 +91,33 @@ export default function Navbar() {
             </Text>
           </Link>
           <HStack spacing={6} display={{ base: "none", md: "flex" }}>
-            <Link href="/" passHref>
-              <ChakraLink 
+            <Link href="/">
+              <Text
                 color="gray.700" 
                 fontWeight="600"
                 fontSize="md"
                 _hover={{ 
                   color: orangePrimary,
-                  textDecoration: "none"
+                  cursor: "pointer"
                 }}
                 transition="color 0.2s"
               >
                 Explore
-              </ChakraLink>
+              </Text>
             </Link>
-            <Link href="/howtouse" passHref>
-              <ChakraLink 
+            <Link href="/howtouse">
+              <Text
                 color="gray.700" 
                 fontWeight="600"
                 fontSize="md"
                 _hover={{ 
                   color: orangePrimary,
-                  textDecoration: "none"
+                  cursor: "pointer"
                 }}
                 transition="color 0.2s"
               >
                 How It Works
-              </ChakraLink>
+              </Text>
             </Link>
           </HStack>
         </Flex>

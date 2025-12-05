@@ -307,7 +307,7 @@ export default function MapComponent({
   }
 
   return (
-    <Box w="100%" h="100%" position="relative"> 
+    <Box w="100%" h="100%" position="relative" minH="400px"> 
           {isLoading && (
             <div
               style={{
@@ -329,7 +329,7 @@ export default function MapComponent({
             {...viewport}
             mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
             onMove={handleMapMove}
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "100%", height: "100%", minHeight: "400px" }}
             mapStyle="mapbox://styles/mapbox/streets-v11"
             // hideTimHortons={hideTimHortons}
             // hideStarbucks={hideStarbucks}
@@ -472,8 +472,9 @@ export default function MapComponent({
                 });
               }
             }}
-            _hover={{ bg: "#E55A2B", transform: "translateX(-50%) translateY(-2px)" }}
+            _hover={{ bg: "#E55A2B" }}
             boxShadow="xl"
+            transition="background-color 0.2s"
           >
             Show cafes near me
           </Button>

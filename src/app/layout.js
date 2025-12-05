@@ -38,9 +38,9 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
  <Providers>
-    <Box display="flex" flexDirection="column" minH="100vh">
+    <Box display="flex" flexDirection="column" minH="100vh" bg="white">
       <Navbar />
-      <Box as="main" flex="1">
+      <Box as="main" flex="1" bg="white">
         {children}
       </Box>
       <Footer />

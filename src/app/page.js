@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Head from "next/head";
 import {
   Box,
@@ -13,16 +13,20 @@ import {
   Divider,
   useColorModeValue,
   Button,
+  SimpleGrid,
+  VStack,
+  HStack,
+  Icon,
   IconButton,
-  useBreakpointValue,
-  useDisclosure,
 } from "@chakra-ui/react";
-import { FaList } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaHeart, FaMapMarkerAlt, FaClock, FaExternalLinkAlt } from "react-icons/fa";
 import LocationSearchInput from "@/components/LocationSearchInput";
 import Map from "../components/Map";
-import CafeListPanel from "@/components/CafeListPanel";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
+import { auth, db } from "@/config/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 const orangePrimary = "#FF6B35";
 
@@ -34,9 +38,11 @@ export default function HomePage() {
   const [hideTimHortons, setHideTimHortons] = useState(false);
   const [hideStarbucks, setHideStarbucks] = useState(false);
   const [openLate, setOpenLate] = useState(false);
+  const [savingCafeId, setSavingCafeId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const lastRequestTime = useRef(0);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const isMobile = useBreakpointValue({ base: true, md: false });
+  
+  const cafesPerPage = 12;
 
   const cardBg = useColorModeValue("white", "gray.800");
   const borderColor = useColorModeValue("gray.200", "gray.700");
@@ -145,13 +151,12 @@ export default function HomePage() {
       const openingHours = cafe.tags?.opening_hours || '';
       if (!openingHours) return false;
       
-      // Simple check for late hours (9pm = 21:00)
       if (/24\s*\/\s*7/i.test(openingHours)) return true;
       const latePattern = /(\d{1,2})(?::?(\d{2}))?\s*-\s*(\d{1,2})(?::?(\d{2}))?/g;
       let match;
       while ((match = latePattern.exec(openingHours)) !== null) {
         const closeHour = parseInt(match[3], 10);
-        if (closeHour >= 21 || closeHour < 6) return true; // Open past 9pm or overnight
+        if (closeHour >= 21 || closeHour < 6) return true;
       }
       return false;
     }
@@ -161,9 +166,83 @@ export default function HomePage() {
 
   const handleCafeClick = (cafe) => {
     setSelectedCafeId(cafe.id);
-    // Scroll to top on mobile when panel opens
-    if (isMobile) {
-      onOpen();
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredResults.length / cafesPerPage);
+  const startIndex = (currentPage - 1) * cafesPerPage;
+  const endIndex = startIndex + cafesPerPage;
+  const currentCafes = filteredResults.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [hideTimHortons, hideStarbucks, openLate, searchResults.length]);
+
+  const getFormattedAddress = (tags) => {
+    if (!tags) return null;
+    const addressParts = [];
+    if (tags["addr:housenumber"] && tags["addr:street"]) {
+      addressParts.push(`${tags["addr:housenumber"]} ${tags["addr:street"]}`);
+    } else if (tags.address) {
+      addressParts.push(tags.address);
+    }
+    if (tags["addr:postcode"]) addressParts.push(tags["addr:postcode"]);
+    if (tags["addr:city"]) addressParts.push(tags["addr:city"]);
+    return addressParts.length > 0 ? addressParts.join(", ") : null;
+  };
+
+  const getGoogleMapsLink = (cafe) => {
+    const name = cafe.tags?.name || "Cafe";
+    const query = encodeURIComponent(`${name} near ${cafe.lat},${cafe.lon}`);
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
+  };
+
+  const handleSaveCafe = async (cafe) => {
+    if (!cafe) return;
+    try {
+      setSavingCafeId(cafe.id);
+      const user = auth.currentUser;
+      if (!user) {
+        toast({
+          title: "Not logged in",
+          description: "Please log in to save cafes.",
+          status: "warning",
+          duration: 3000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      const docRef = doc(db, "users", user.uid, "savedCafes", cafe.id.toString());
+      await setDoc(docRef, {
+        id: cafe.id,
+        name: cafe.tags?.name,
+        lat: cafe.lat,
+        lon: cafe.lon,
+        address: getFormattedAddress(cafe.tags),
+        openingHours: cafe.tags?.opening_hours || "Opening hours not available",
+        timestamp: Date.now(),
+      });
+
+      toast({
+        title: "Saved!",
+        description: "Cafe has been added to your saved list.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.error("Error saving cafe:", error);
+      toast({
+        title: "Error saving cafe",
+        description: error.message,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setSavingCafeId(null);
     }
   };
 
@@ -180,13 +259,13 @@ export default function HomePage() {
         />
       </Head>
 
-      <Box bg="gray.50" minH="calc(100vh - 64px)">
+      <Box bg="white" minH="calc(100vh - 64px)">
         <Container maxW="full" px={0}>
           {/* Search & Filters Bar */}
           <Box
-            bg={cardBg}
+            bg="white"
             borderBottomWidth="1px"
-            borderBottomColor={borderColor}
+            borderBottomColor="gray.200"
             px={{ base: 4, md: 8 }}
             py={6}
             position="sticky"
@@ -201,34 +280,37 @@ export default function HomePage() {
               gap={4}
             >
               <Box flex="1">
-                <Heading size="md" mb={4} color="gray.900" fontWeight="700">
+                <Heading size="md" mb={4} color={orangePrimary} fontWeight="700">
                   Search & Filters
                 </Heading>
-                <Stack spacing={4} direction={{ base: "column", sm: "row" }} align="center">
-                  <Flex justify="space-between" align="center" w={{ base: "100%", sm: "auto" }} minW="200px">
-                    <Text fontSize="sm" fontWeight="600" color="gray.700">Hide Tim Hortons</Text>
+                <Stack spacing={3} direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }}>
+                  <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+                    <Text fontSize="sm" fontWeight="600" color="gray.900">Hide Tim Hortons</Text>
                     <Switch
                       colorScheme="orange"
                       isChecked={hideTimHortons}
                       onChange={() => setHideTimHortons((prev) => !prev)}
+                      size="md"
                     />
                   </Flex>
 
-                  <Flex justify="space-between" align="center" w={{ base: "100%", sm: "auto" }} minW="200px">
-                    <Text fontSize="sm" fontWeight="600" color="gray.700">Hide Starbucks</Text>
+                  <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+                    <Text fontSize="sm" fontWeight="600" color="gray.900">Hide Starbucks</Text>
                     <Switch
                       colorScheme="orange"
                       isChecked={hideStarbucks}
                       onChange={() => setHideStarbucks((prev) => !prev)}
+                      size="md"
                     />
                   </Flex>
 
-                  <Flex justify="space-between" align="center" w={{ base: "100%", sm: "auto" }} minW="200px">
-                    <Text fontSize="sm" fontWeight="600" color="gray.700">Open late (≥ 9pm)</Text>
+                  <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+                    <Text fontSize="sm" fontWeight="600" color="gray.900">Open late (≥ 9pm)</Text>
                     <Switch
                       colorScheme="orange"
                       isChecked={openLate}
                       onChange={() => setOpenLate(v => !v)}
+                      size="md"
                     />
                   </Flex>
                 </Stack>
@@ -242,76 +324,200 @@ export default function HomePage() {
                   }}
                 />
               </Box>
-
-              {/* Mobile: Show List Button */}
-              {isMobile && filteredResults.length > 0 && (
-                <IconButton
-                  aria-label="Show cafe list"
-                  icon={<FaList />}
-                  bg={orangePrimary}
-                  color="white"
-                  size="lg"
-                  borderRadius="full"
-                  onClick={onOpen}
-                  _hover={{ bg: "#E55A2B" }}
-                />
-              )}
             </Flex>
           </Box>
 
-          {/* Map + Side Panel Layout */}
-          <Flex direction={{ base: "column", md: "row" }} h={{ base: "auto", md: "calc(100vh - 200px)" }}>
-            {/* Map Section */}
+          {/* Map Section */}
+          <Box
+            w="100%"
+            h={{ base: "60vh", md: "70vh" }}
+            minH={{ base: "400px", md: "500px" }}
+            position="relative"
+            borderBottomWidth="1px"
+            borderBottomColor="gray.200"
+            bg="gray.100"
+          >
             <Box
-              flex="1"
+              w="100%"
+              h="100%"
               position="relative"
-              h={{ base: "60vh", md: "100%" }}
-              borderRightWidth={{ base: 0, md: "1px" }}
-              borderRightColor={borderColor}
+              overflow="hidden"
             >
-              <Box
-                w="100%"
-                h="100%"
-                borderRadius={{ base: 0, md: "2xl" }}
-                overflow="hidden"
-                m={{ base: 0, md: 4 }}
-                boxShadow={{ base: "none", md: "xl" }}
-                borderWidth={{ base: 0, md: "1px" }}
-                borderColor={borderColor}
-              >
-                <Map
-                  userLocation={userLocation}
-                  results={searchResults}
-                  setUserLocation={setUserLocation}
-                  fetchCafes={fetchCafes}
-                  hideTimHortons={hideTimHortons}
-                  hideStarbucks={hideStarbucks}
-                  openLate={openLate}
-                  selectedCafeId={selectedCafeId}
-                  onCafeClick={handleCafeClick}
-                />
-              </Box>
-            </Box>
-
-            {/* Side Panel - Desktop/Tablet */}
-            {!isMobile && (
-              <CafeListPanel
-                cafes={filteredResults}
-                onCafeClick={handleCafeClick}
+              <Map
+                userLocation={userLocation}
+                results={searchResults}
+                setUserLocation={setUserLocation}
+                fetchCafes={fetchCafes}
+                hideTimHortons={hideTimHortons}
+                hideStarbucks={hideStarbucks}
+                openLate={openLate}
                 selectedCafeId={selectedCafeId}
+                onCafeClick={handleCafeClick}
               />
-            )}
-          </Flex>
+            </Box>
+          </Box>
 
-          {/* Mobile Drawer */}
-          {isMobile && (
-            <CafeListPanel
-              cafes={filteredResults}
-              onCafeClick={handleCafeClick}
-              selectedCafeId={selectedCafeId}
-              isOpen={isOpen}
-              onClose={onClose}
-            />
+          {/* Cafe List Under Map */}
+          {filteredResults.length > 0 && (
+            <Box bg="gray.50" py={8}>
+              <Container maxW="7xl">
+                <Flex justify="space-between" align="center" mb={6}>
+                  <Heading size="lg" color={orangePrimary} fontWeight="800">
+                    Nearby Cafes ({filteredResults.length})
+                  </Heading>
+                  <Text fontSize="sm" color="gray.600">
+                    Showing {startIndex + 1}-{Math.min(endIndex, filteredResults.length)} of {filteredResults.length}
+                  </Text>
+                </Flex>
+                <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+                  {currentCafes.map((cafe, index) => {
+                    const isSelected = selectedCafeId === cafe.id;
+                    const address = getFormattedAddress(cafe.tags);
+                    const hours = cafe.tags?.opening_hours || "Opening hours not available";
+                    
+                    return (
+                      <Box
+                        key={`${cafe.id}-${cafe.lat}-${cafe.lon}-${index}`}
+                        p={4}
+                        borderRadius="lg"
+                        borderWidth="1px"
+                        borderColor={isSelected ? orangePrimary : "gray.200"}
+                        bg={isSelected ? `${orangePrimary}05` : "white"}
+                        cursor="pointer"
+                        _hover={{
+                          borderColor: orangePrimary,
+                          bg: `${orangePrimary}08`,
+                        }}
+                        transition="all 0.2s"
+                        onClick={() => handleCafeClick(cafe)}
+                      >
+                        <VStack align="stretch" spacing={2}>
+                          <HStack justify="space-between" align="start">
+                            <Heading size="sm" color="gray.900" fontWeight="700" flex="1">
+                              {cafe.tags?.name || "Unnamed Cafe"}
+                            </Heading>
+                            <Button
+                              size="xs"
+                              leftIcon={<FaHeart />}
+                              variant="outline"
+                              borderColor="pink.400"
+                              color="pink.500"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSaveCafe(cafe);
+                              }}
+                              isLoading={savingCafeId === cafe.id}
+                              _hover={{ bg: "pink.50", borderColor: "pink.500" }}
+                            >
+                              Save
+                            </Button>
+                          </HStack>
+
+                          {address && (
+                            <HStack spacing={2} color="gray.600">
+                              <Icon as={FaMapMarkerAlt} color={orangePrimary} boxSize={3} />
+                              <Text fontSize="xs">{address}</Text>
+                            </HStack>
+                          )}
+
+                          <HStack spacing={2} color="gray.600">
+                            <Icon as={FaClock} color={orangePrimary} boxSize={3} />
+                            <Text fontSize="xs" noOfLines={1}>{hours}</Text>
+                          </HStack>
+
+                          <Button
+                            size="xs"
+                            variant="outline"
+                            leftIcon={<FaExternalLinkAlt />}
+                            as="a"
+                            href={getGoogleMapsLink(cafe)}
+                            target="_blank"
+                            onClick={(e) => e.stopPropagation()}
+                            borderColor={orangePrimary}
+                            color={orangePrimary}
+                            _hover={{ bg: `${orangePrimary}10` }}
+                            mt={1}
+                          >
+                            View on Maps
+                          </Button>
+                        </VStack>
+                      </Box>
+                    );
+                  })}
+                </SimpleGrid>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <Flex justify="center" align="center" gap={2} mt={8}>
+                    <IconButton
+                      aria-label="Previous page"
+                      icon={<FaChevronLeft />}
+                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                      isDisabled={currentPage === 1}
+                      bg="white"
+                      borderWidth="1px"
+                      borderColor="gray.300"
+                      color={orangePrimary}
+                      _hover={{ bg: "gray.50", borderColor: orangePrimary }}
+                      _disabled={{ opacity: 0.4, cursor: "not-allowed" }}
+                    />
+                    
+                    <HStack spacing={1}>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1)
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              size="sm"
+                              onClick={() => setCurrentPage(page)}
+                              bg={currentPage === page ? orangePrimary : "white"}
+                              color={currentPage === page ? "white" : "gray.700"}
+                              borderWidth="1px"
+                              borderColor={currentPage === page ? orangePrimary : "gray.300"}
+                              _hover={{
+                                bg: currentPage === page ? "#E55A2B" : "gray.50",
+                                borderColor: orangePrimary,
+                              }}
+                              minW="40px"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <Text key={page} color="gray.400" px={2}>
+                              ...
+                            </Text>
+                          );
+                        }
+                        return null;
+                      })}
+                    </HStack>
+
+                    <IconButton
+                      aria-label="Next page"
+                      icon={<FaChevronRight />}
+                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                      isDisabled={currentPage === totalPages}
+                      bg="white"
+                      borderWidth="1px"
+                      borderColor="gray.300"
+                      color={orangePrimary}
+                      _hover={{ bg: "gray.50", borderColor: orangePrimary }}
+                      _disabled={{ opacity: 0.4, cursor: "not-allowed" }}
+                    />
+                  </Flex>
+                )}
+              </Container>
+            </Box>
           )}
         </Container>
       </Box>

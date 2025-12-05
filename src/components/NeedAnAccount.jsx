@@ -1,16 +1,17 @@
 'use client';
 
-import {Text} from "@chakra-ui/react";
+import {Text, Link} from "@chakra-ui/react";
 import NextLink from "next/link";
 
+const orangePrimary = "#FF6B35";
 
 export default function NeedAnAccount() {
     return (
-        <Text fontSize='sm' mt={2}>
+        <Text fontSize='sm' mt={2} color="gray.700">
             Don't have an account? {" "}
-            <NextLink  href="signup" passHref >
+            <Link as={NextLink} href="/signup" color={orangePrimary} fontWeight="600" _hover={{ textDecoration: "underline" }}>
                 Create one
-            </NextLink>
+            </Link>
         </Text>
     )
 }

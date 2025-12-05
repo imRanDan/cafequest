@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/utils/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { Box, Heading, Text, Button } from "@chakra-ui/react";
+import { Box, Heading, Text, Button, Container } from "@chakra-ui/react";
 import { signOut } from "firebase/auth";
 import {auth} from "@/config/firebase";
 import { useToast } from '@chakra-ui/react';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
 
+const orangePrimary = "#FF6B35";
 
 export default function ProfilePage() {
     const { user, loading} = useAuth();
@@ -17,15 +18,12 @@ export default function ProfilePage() {
     const router = useRouter();
     const toast = useToast();
 
-    // if loading and no user then show redirect to login
     useEffect(() => {
         if (!loading && !user) {
             router.push("/login");
         }
     }, [user, loading])
 
-
-    //fetch users full name once they're logged in
     useEffect(() => {
         if (!loading && user) {
             const fetchUserProfile = async () => {
@@ -40,13 +38,12 @@ export default function ProfilePage() {
         }
     }, [user, loading]);
 
-
     const handleLogout = async () => {
         await signOut(auth);
         toast({
             title: "Logged out successfully.",
             status: "info",
-            duraiton: 3000,
+            duration: 3000,
             isClosable: true,
         });
         router.push("/login");
@@ -54,16 +51,41 @@ export default function ProfilePage() {
 
     if (loading || !user) return <p>Loading....</p>
 
-
     return (
-        <Box maxW='md' mx='auto' mt={10} p={4} borderWidth={1} borderRadius='lg'>
-            <Heading size='md' mb={4}>Your profile</Heading>
-            <Text><strong>Email: </strong>{user.email}</Text>
-            <Text><strong>Name: </strong>{fullName}</Text>
-            {/* For future reference, add full name, profile pic, etc. here */}
-            <Button colorScheme='red' mt={6} onClick={handleLogout}>
-                Logout
-            </Button>
+        <Box bg="white" minH="calc(100vh - 64px)" py={12}>
+            <Container maxW="md">
+                <Box 
+                    maxW='md' 
+                    mx='auto' 
+                    p={8} 
+                    bg="white"
+                    borderWidth="1px" 
+                    borderColor="gray.200"
+                    borderRadius="xl"
+                    boxShadow="lg"
+                >
+                    <Heading size='lg' mb={6} color={orangePrimary} fontWeight="800">Your Profile</Heading>
+                    <Box mb={4}>
+                        <Text fontWeight="600" color="gray.700" mb={1}>Email:</Text>
+                        <Text color="gray.900">{user.email}</Text>
+                    </Box>
+                    <Box mb={6}>
+                        <Text fontWeight="600" color="gray.700" mb={1}>Name:</Text>
+                        <Text color="gray.900">{fullName}</Text>
+                    </Box>
+                    <Button 
+                        bg={orangePrimary}
+                        color="white"
+                        mt={6} 
+                        onClick={handleLogout}
+                        fontWeight="700"
+                        _hover={{ bg: "#E55A2B" }}
+                        w="full"
+                    >
+                        Logout
+                    </Button>
+                </Box>
+            </Container>
         </Box>
     )
 }

@@ -7,7 +7,7 @@ import theme from "../app/theme";
 
 export function Providers({ children }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light">
     <ChakraProvider theme={theme}>
       <AuthProvider>
       {children}

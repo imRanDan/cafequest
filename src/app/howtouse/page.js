@@ -5,9 +5,9 @@ import {
   Flex,
   Heading,
   Text,
-  useColorModeValue,
   Divider,
   Button,
+  Container,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -17,62 +17,62 @@ const MotionHeading = motion.create(Heading);
 const MotionText = motion.create(Text);
 const MotionButton = motion(Button);
 
+const orangePrimary = "#FF6B35";
+
 export default function HowToUse() {
-  const bg = useColorModeValue("gray.50", "gray.800");
-  const border = useColorModeValue("gray.200", "gray.700");
-  const textColor = useColorModeValue("gray.800", "gray.100");
-
   return (
-    <Flex justify="center" p={6}>
-      <MotionBox
-        maxW="4xl"
-        w="full"
-        p={8}
-        bg={bg}
-        borderRadius="xl"
-        borderWidth="1px"
-        borderColor={border}
-        boxShadow="md"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <MotionHeading
-          size="xl"
-          mb={4}
-          textAlign="center"
-          initial={{ opacity: 0, y: 20 }}
+    <Box bg="white" minH="calc(100vh - 64px)" py={12}>
+      <Container maxW="4xl">
+        <MotionBox
+          w="full"
+          p={8}
+          bg="white"
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor="gray.200"
+          boxShadow="lg"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
+          transition={{ duration: 0.6 }}
         >
-          How to Use CafeQuest
-        </MotionHeading>
-
-        <Divider mb={6} />
-
-        {steps.map((step, index) => (
-          <MotionBox
-            key={index}
-            mb={6}
+          <MotionHeading
+            size="xl"
+            mb={4}
+            textAlign="center"
+            color={orangePrimary}
+            fontWeight="800"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 + index * 0.2, duration: 0.5 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <Heading size="md" mb={2} color={textColor}>
-              {step.title}
-            </Heading>
-            <Text color={textColor}>{step.description}</Text>
-          </MotionBox>
+            How to Use CafeQuest
+          </MotionHeading>
 
-          
-        ))}
+          <Divider mb={6} borderColor="gray.200" />
 
-                {/* CTA */}
-          <Box textAlign="center">
-            <Link href="/" passHref>
+          {steps.map((step, index) => (
+            <MotionBox
+              key={index}
+              mb={6}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.2, duration: 0.5 }}
+            >
+              <Heading size="md" mb={2} color="gray.900" fontWeight="700">
+                {step.title}
+              </Heading>
+              <Text color="gray.700">{step.description}</Text>
+            </MotionBox>
+          ))}
+
+          <Box textAlign="center" mt={8}>
+            <Link href="/">
               <MotionButton
-                colorScheme="teal"
+                bg={orangePrimary}
+                color="white"
                 size="lg"
+                fontWeight="700"
+                _hover={{ bg: "#E55A2B" }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 initial={{ opacity: 0, y: 20 }}
@@ -83,9 +83,9 @@ export default function HowToUse() {
               </MotionButton>
             </Link>
           </Box>
-      </MotionBox>
-  
-    </Flex>
+        </MotionBox>
+      </Container>
+    </Box>
   );
 }
 
@@ -108,6 +108,6 @@ const steps = [
   {
     title: "4. Explore via the Map",
     description:
-      "Use the interactive map to click on any cafe marker and view more details. It's the fastest way to explore what’s around you.",
+      "Use the interactive map to click on any cafe marker and view more details. It's the fastest way to explore what's around you.",
   },
 ];
