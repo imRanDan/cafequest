@@ -92,9 +92,10 @@ export default function HomePage() {
     const cachedCafes = getFromCache("cafes", cacheKey);
     if (cachedCafes) {
       setSearchResults(cachedCafes);
+      console.log("✅ CACHE HIT - Using cached data for:", cacheKey); 
       return;
     }
-
+    console.log("❌ CACHE MISS - Fetching from API for:", cacheKey);
     try {
       await waitForRateLimit();
 
@@ -252,12 +253,7 @@ export default function HomePage() {
       <Head>
         <title>CafeQuest</title>
         <meta name="description" content="Find the best cafes around you" />
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossOrigin=""
-        />
+
       </Head>
 
       <Box bg="white" minH="calc(100vh - 64px)">
