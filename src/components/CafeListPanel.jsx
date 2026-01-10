@@ -47,8 +47,24 @@ const getOpeningHours = (tags) => {
 };
 
 const getGoogleMapsLink = (cafe) => {
+  // Use exact coordinates with address to target the specific location
+  if (cafe.lat && cafe.lon) {
+    const name = cafe.tags?.name || "Cafe";
+    const address = getFormattedAddress(cafe.tags);
+    
+    // Include address in query to help identify exact location
+    // Format: name + address + coordinates ensures we get the specific cafe
+    let query = name;
+    if (address) {
+      query += ` ${address}`;
+    }
+    query += ` @${cafe.lat},${cafe.lon}`;
+    
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  }
+  // Fallback to search if coordinates not available
   const name = cafe.tags?.name || "Cafe";
-  const query = encodeURIComponent(`${name} near ${cafe.lat},${cafe.lon}`);
+  const query = encodeURIComponent(`${name}`);
   return `https://www.google.com/maps/search/?api=1&query=${query}`;
 };
 

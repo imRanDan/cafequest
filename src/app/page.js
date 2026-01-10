@@ -18,6 +18,7 @@ import {
   HStack,
   Icon,
   IconButton,
+  Badge,
 } from "@chakra-ui/react";
 import { FaChevronLeft, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaHeart, FaMapMarkerAlt, FaClock, FaExternalLinkAlt } from "react-icons/fa";
@@ -38,6 +39,7 @@ export default function HomePage() {
   const [hideTimHortons, setHideTimHortons] = useState(false);
   const [hideStarbucks, setHideStarbucks] = useState(false);
   const [openLate, setOpenLate] = useState(false);
+  const [laptopFriendly, setLaptopFriendly] = useState(false);
   const [savingCafeId, setSavingCafeId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -141,6 +143,32 @@ export default function HomePage() {
     }
   };
 
+  // Check if cafe is laptop/work-friendly based on OSM tags
+  const isLaptopFriendly = (tags) => {
+    if (!tags) return false;
+    
+    // Check for wifi/internet access
+    const hasInternet = 
+      tags.internet_access === 'yes' || 
+      tags.internet_access === 'wlan' ||
+      tags.wifi === 'yes' ||
+      tags.wifi === 'free' ||
+      tags['internet_access:fee'] === 'no';
+    
+    // Check for power outlets (bonus points)
+    const hasOutlets = tags.outlets === 'yes';
+    
+    // Check for indoor seating (work-friendly environment)
+    const hasSeating = 
+      tags.seating === 'yes' || 
+      tags.seating === 'indoor' ||
+      tags['seating:indoor'] === 'yes';
+    
+    // Consider it laptop-friendly if it has internet access
+    // (outlets and seating are nice-to-have but not required)
+    return hasInternet;
+  };
+
   // Filter cafes based on filters
   const filteredResults = searchResults.filter((cafe) => {
     const brand = (cafe?.tags?.brand || '').toLowerCase();
@@ -163,6 +191,9 @@ export default function HomePage() {
       return false;
     }
     
+    // Add laptop-friendly filter
+    if (laptopFriendly && !isLaptopFriendly(cafe.tags)) return false;
+    
     return true;
   });
 
@@ -179,7 +210,7 @@ export default function HomePage() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [hideTimHortons, hideStarbucks, openLate, searchResults.length]);
+  }, [hideTimHortons, hideStarbucks, openLate, laptopFriendly, searchResults.length]);
 
   const getFormattedAddress = (tags) => {
     if (!tags) return null;
@@ -195,8 +226,24 @@ export default function HomePage() {
   };
 
   const getGoogleMapsLink = (cafe) => {
+    // Use exact coordinates with address to target the specific location
+    if (cafe.lat && cafe.lon) {
+      const name = cafe.tags?.name || "Cafe";
+      const address = getFormattedAddress(cafe.tags);
+      
+      // Include address in query to help identify exact location
+      // Format: name + address + coordinates ensures we get the specific cafe
+      let query = name;
+      if (address) {
+        query += ` ${address}`;
+      }
+      query += ` @${cafe.lat},${cafe.lon}`;
+      
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+    // Fallback to search if coordinates not available
     const name = cafe.tags?.name || "Cafe";
-    const query = encodeURIComponent(`${name} near ${cafe.lat},${cafe.lon}`);
+    const query = encodeURIComponent(`${name}`);
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
   };
 
@@ -335,6 +382,16 @@ export default function HomePage() {
                         size="md"
                       />
                     </Flex>
+
+                    <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
+                      <Text fontSize="sm" fontWeight="600" color="gray.900">Laptop Friendly</Text>
+                      <Switch
+                        colorScheme="orange"
+                        isChecked={laptopFriendly}
+                        onChange={() => setLaptopFriendly((prev) => !prev)}
+                        size="md"
+                      />
+                    </Flex>
                   </Stack>
                 </Box>
               </Box>
@@ -365,6 +422,8 @@ export default function HomePage() {
                 hideTimHortons={hideTimHortons}
                 hideStarbucks={hideStarbucks}
                 openLate={openLate}
+                laptopFriendly={laptopFriendly}
+                isLaptopFriendly={isLaptopFriendly}
                 selectedCafeId={selectedCafeId}
                 onCafeClick={handleCafeClick}
               />
@@ -388,6 +447,7 @@ export default function HomePage() {
                     const isSelected = selectedCafeId === cafe.id;
                     const address = getFormattedAddress(cafe.tags);
                     const hours = cafe.tags?.opening_hours || "Opening hours not available";
+                    const isLaptopFriendlyCafe = isLaptopFriendly(cafe.tags);
                     
                     return (
                       <Box
@@ -407,9 +467,18 @@ export default function HomePage() {
                       >
                         <VStack align="stretch" spacing={2}>
                           <HStack justify="space-between" align="start">
-                            <Heading size="sm" color="gray.900" fontWeight="700" flex="1">
-                              {cafe.tags?.name || "Unnamed Cafe"}
-                            </Heading>
+                            <Box flex="1">
+                              <HStack spacing={2} align="center" mb={1}>
+                                <Heading size="sm" color="gray.900" fontWeight="700">
+                                  {cafe.tags?.name || "Unnamed Cafe"}
+                                </Heading>
+                                {isLaptopFriendlyCafe && (
+                                  <Badge colorScheme="green" fontSize="xs" px={2} py={0.5}>
+                                    💻 Laptop Friendly
+                                  </Badge>
+                                )}
+                              </HStack>
+                            </Box>
                             <Button
                               size="xs"
                               leftIcon={<FaHeart />}
