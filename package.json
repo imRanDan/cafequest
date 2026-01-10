@@ -28,7 +28,7 @@
     "leaflet": "^1.9.4",
     "lodash.debounce": "^4.0.8",
     "mapbox-gl": "^3.9.1",
-    "next": "^16.0.7",
+    "next": "16.0.10",
     "next-themes": "^0.4.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
