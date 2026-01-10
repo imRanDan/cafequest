@@ -20,6 +20,8 @@ export default function MapComponent({
   hideTimHortons,
   hideStarbucks,
   openLate,
+  laptopFriendly,
+  isLaptopFriendly,
   selectedCafeId,
   onCafeClick,
 }) {
@@ -149,10 +151,26 @@ export default function MapComponent({
   //I used this for limiting results but not sure if it worked LOL
   // const limitedResults = results.slice(0, displayLimit);
 
-    //link to google maps place search --TEST
+    //link to google maps with exact coordinates, address, and cafe name
   const getGoogleMapsLink = (cafe) => {
+    // Use exact coordinates with address to target the specific location
+    if (cafe.lat && cafe.lon) {
+      const name = cafe.tags?.name || "Cafe";
+      const address = getFormattedAddress(cafe.tags);
+      
+      // Include address in query to help identify exact location
+      // Format: name + address + coordinates ensures we get the specific cafe
+      let query = name;
+      if (address) {
+        query += ` ${address}`;
+      }
+      query += ` @${cafe.lat},${cafe.lon}`;
+      
+      return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+    }
+    // Fallback to search if coordinates not available
     const name = cafe.tags?.name || "Cafe";
-    const query = encodeURIComponent(`${name} near ${cafe.lat},${cafe.lon}`);
+    const query = encodeURIComponent(`${name}`);
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
   }
 
@@ -200,6 +218,7 @@ export default function MapComponent({
     if (hideTimHortons && name.includes("tim hortons")) return false;
     if (hideStarbucks && name.includes("starbucks")) return false;
     if (openLate && !isOpenLate(cafe.tags)) return false;
+    if (laptopFriendly && isLaptopFriendly && !isLaptopFriendly(cafe.tags)) return false;
     return true;
   });
 
@@ -454,9 +473,18 @@ export default function MapComponent({
 
                   <VStack align="stretch" spacing={3} pr={8}>
                     {/* Cafe Name */}
-                    <Heading size="md" color="gray.900" fontWeight="700" lineHeight="1.2">
-                      {selectedCafe.tags?.name || "Unnamed Cafe"}
-                    </Heading>
+                    <Box>
+                      <HStack spacing={2} align="center" mb={1}>
+                        <Heading size="md" color="gray.900" fontWeight="700" lineHeight="1.2">
+                          {selectedCafe.tags?.name || "Unnamed Cafe"}
+                        </Heading>
+                        {isLaptopFriendly && isLaptopFriendly(selectedCafe.tags) && (
+                          <Badge colorScheme="green" fontSize="xs" px={2} py={0.5}>
+                            💻 Laptop Friendly
+                          </Badge>
+                        )}
+                      </HStack>
+                    </Box>
 
                     {/* Address */}
                     {getFormattedAddress(selectedCafe.tags) && (
