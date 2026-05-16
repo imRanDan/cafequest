@@ -119,6 +119,20 @@ export default function Navbar() {
                 How It Works
               </Text>
             </Link>
+            <Link href="/community">
+              <Text
+                color="gray.700" 
+                fontWeight="600"
+                fontSize="md"
+                _hover={{ 
+                  color: orangePrimary,
+                  cursor: "pointer"
+                }}
+                transition="color 0.2s"
+              >
+                Community
+              </Text>
+            </Link>
           </HStack>
         </Flex>
 

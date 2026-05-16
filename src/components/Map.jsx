@@ -10,6 +10,8 @@ import { CloseIcon } from "@chakra-ui/icons";
 import Footer from "./Footer";
 import { auth, db } from "@/config/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import CafePassport from "./CafePassport";
+import CafeVoting from "./CafeVoting";
 
 
 export default function MapComponent({
@@ -471,7 +473,7 @@ export default function MapComponent({
                     <CloseIcon boxSize={2.5} />
                   </Button>
 
-                  <VStack align="stretch" spacing={3} pr={8}>
+                  <VStack align="stretch" spacing={2} pr={8}>
                     {/* Cafe Name */}
                     <Box>
                       <HStack spacing={2} align="center" mb={1}>
@@ -505,6 +507,21 @@ export default function MapComponent({
                     </HStack>
 
                     <Divider borderColor="gray.200" />
+
+                    {/* Passport - Mark as Visited & Answer Questions */}
+                    <CafePassport 
+                      cafeId={selectedCafe.id} 
+                      cafeName={selectedCafe.tags?.name || "Unnamed Cafe"}
+                      cafeAddress={getFormattedAddress(selectedCafe.tags)}
+                    />
+
+                    <Divider borderColor="gray.200" />
+
+                    {/* Community Voting - Collapsible */}
+                    <CafeVoting 
+                      cafeId={selectedCafe.id} 
+                      cafeName={selectedCafe.tags?.name || "Unnamed Cafe"}
+                    />
 
                     {/* Action Buttons */}
                     <HStack spacing={2}>

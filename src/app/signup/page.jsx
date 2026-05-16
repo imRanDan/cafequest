@@ -117,18 +117,18 @@ export default function SignupPage() {
   if (loading || user) return null;
 
   return (
-    <Box bg="white" minH="calc(100vh - 64px)" py={12}>
-      <Container maxW="md">
+    <Box bg="white" minH="calc(100vh - 64px)" py={{ base: 4, md: 6 }}>
+      <Container maxW="md" px={{ base: 4, md: 6 }}>
         <Box 
           mx="auto" 
-          p={8} 
+          p={{ base: 4, md: 6 }} 
           bg="white"
           borderWidth="1px" 
           borderColor="gray.200"
           borderRadius="xl"
           boxShadow="lg"
         >
-          <Heading mb={6} color={orangePrimary} fontWeight="800">Sign Up</Heading>
+          <Heading mb={{ base: 3, md: 4 }} color={orangePrimary} fontWeight="800">Sign Up</Heading>
           {emailSent ? (
             <Box>
               <Text color="gray.700" mb={4} fontSize="lg">

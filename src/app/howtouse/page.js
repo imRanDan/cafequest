@@ -21,11 +21,11 @@ const orangePrimary = "#FF6B35";
 
 export default function HowToUse() {
   return (
-    <Box bg="white" minH="calc(100vh - 64px)" py={12}>
-      <Container maxW="4xl">
+    <Box bg="white" minH="calc(100vh - 64px)" py={{ base: 4, md: 6 }}>
+      <Container maxW="4xl" px={{ base: 4, md: 6 }}>
         <MotionBox
           w="full"
-          p={8}
+          p={{ base: 4, md: 6 }}
           bg="white"
           borderRadius="xl"
           borderWidth="1px"

@@ -24,6 +24,8 @@ import { FaChevronLeft, FaChevronRight, FaChevronDown, FaChevronUp } from "react
 import { FaHeart, FaMapMarkerAlt, FaClock, FaExternalLinkAlt } from "react-icons/fa";
 import LocationSearchInput from "@/components/LocationSearchInput";
 import Map from "../components/Map";
+import CafePassport from "@/components/CafePassport";
+import CafeVoting from "@/components/CafeVoting";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { auth, db } from "@/config/firebase";
@@ -42,7 +44,7 @@ export default function HomePage() {
   const [laptopFriendly, setLaptopFriendly] = useState(false);
   const [savingCafeId, setSavingCafeId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(true); // Start open by default
   const lastRequestTime = useRef(0);
   
   const cafesPerPage = 12;
@@ -101,30 +103,10 @@ export default function HomePage() {
     try {
       await waitForRateLimit();
 
-      const query = `
-        [out:json][timeout:25];
-        (
-          node["amenity"="cafe"](around:5000,${latitude},${longitude});
-          way["amenity"="cafe"](around:5000,${latitude},${longitude});
-        );
-        out body;
-        >;
-        out skel qt;
-        out meta;
-      `;
-
-      const formData = new URLSearchParams();
-      formData.append("data", query);
-
-      const response = await axios.post(
-        "https://overpass-api.de/api/interpreter",
-        formData.toString(),
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
+      const response = await axios.post("/api/cafes", {
+        lat: Number(latitude),
+        lon: Number(longitude),
+      });
 
       if (response.data?.elements) {
         setSearchResults(response.data.elements);
@@ -311,7 +293,7 @@ export default function HomePage() {
             borderBottomWidth="1px"
             borderBottomColor="gray.200"
             px={{ base: 4, md: 8 }}
-            py={{ base: 4, md: 6 }}
+            py={{ base: 3, md: 4 }}
             position="sticky"
             top="64px"
             zIndex={50}
@@ -329,7 +311,6 @@ export default function HomePage() {
                     Search & Filters
                   </Heading>
                   <IconButton
-                    display={{ base: "flex", md: "none" }}
                     aria-label={isFiltersOpen ? "Hide filters" : "Show filters"}
                     icon={isFiltersOpen ? <FaChevronUp /> : <FaChevronDown />}
                     size="sm"
@@ -350,8 +331,8 @@ export default function HomePage() {
                   />
                 </Box>
 
-                {/* Filters - Collapsible on Mobile */}
-                <Box display={{ base: isFiltersOpen ? "block" : "none", md: "block" }}>
+                {/* Filters - Collapsible on All Screen Sizes */}
+                <Box display={isFiltersOpen ? "block" : "none"}>
                   <Stack spacing={3} direction={{ base: "column", md: "row" }} align={{ base: "stretch", md: "center" }}>
                     <Flex justify="space-between" align="center" w="100%" bg="gray.50" p={3} borderRadius="lg" borderWidth="1px" borderColor="gray.200">
                       <Text fontSize="sm" fontWeight="600" color="gray.900">Hide Tim Hortons</Text>
@@ -432,9 +413,9 @@ export default function HomePage() {
 
           {/* Cafe List Under Map */}
           {filteredResults.length > 0 && (
-            <Box bg="gray.50" py={8}>
-              <Container maxW="7xl">
-                <Flex justify="space-between" align="center" mb={6}>
+            <Box bg="gray.50" py={{ base: 3, md: 4 }}>
+              <Container maxW="7xl" px={{ base: 4, md: 6 }}>
+                <Flex justify="space-between" align="center" mb={{ base: 3, md: 4 }}>
                   <Heading size="lg" color={orangePrimary} fontWeight="800">
                     Nearby Cafes ({filteredResults.length})
                   </Heading>
@@ -507,6 +488,23 @@ export default function HomePage() {
                             <Icon as={FaClock} color={orangePrimary} boxSize={3} />
                             <Text fontSize="xs" noOfLines={1}>{hours}</Text>
                           </HStack>
+
+                          {/* Passport - Mark as Visited & Answer Questions */}
+                          <Box onClick={(e) => e.stopPropagation()}>
+                            <CafePassport 
+                              cafeId={cafe.id} 
+                              cafeName={cafe.tags?.name || "Unnamed Cafe"}
+                              cafeAddress={getFormattedAddress(cafe.tags)}
+                            />
+                          </Box>
+
+                          {/* Community Voting - Collapsible */}
+                          <Box onClick={(e) => e.stopPropagation()} mt={1.5}>
+                            <CafeVoting 
+                              cafeId={cafe.id} 
+                              cafeName={cafe.tags?.name || "Unnamed Cafe"}
+                            />
+                          </Box>
 
                           <Button
                             size="xs"

@@ -172,6 +172,29 @@ service cloud.firestore {
       match /savedCafes/{cafeId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
+      
+      // Visited cafes subcollection (passport)
+      match /visitedCafes/{cafeId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Cafe votes collection - community voting system
+    match /cafeVotes/{cafeId} {
+      // Allow anyone to read votes (for displaying aggregated results)
+      allow read: if true;
+      
+      // Votes subcollection
+      match /votes/{userId} {
+        // Users can read all votes (for aggregation)
+        allow read: if true;
+        
+        // Users can only write their own vote
+        allow create, update: if request.auth != null && request.auth.uid == userId;
+        
+        // Users can delete their own vote
+        allow delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }

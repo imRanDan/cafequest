@@ -98,24 +98,24 @@ export default function ProfilePage() {
     if (loading || !user) return <p>Loading....</p>
 
     return (
-        <Box bg="white" minH="calc(100vh - 64px)" py={12}>
-            <Container maxW="md">
+        <Box bg="white" minH="calc(100vh - 64px)" py={{ base: 4, md: 6 }}>
+            <Container maxW="md" px={{ base: 4, md: 6 }}>
                 <Box 
                     maxW='md' 
                     mx='auto' 
-                    p={8} 
+                    p={{ base: 4, md: 6 }} 
                     bg="white"
                     borderWidth="1px" 
                     borderColor="gray.200"
                     borderRadius="xl"
                     boxShadow="lg"
                 >
-                    <Heading size='lg' mb={6} color={orangePrimary} fontWeight="800">Your Profile</Heading>
+                    <Heading size='lg' mb={{ base: 3, md: 4 }} color={orangePrimary} fontWeight="800">Your Profile</Heading>
                     <Box mb={4}>
                         <Text fontWeight="600" color="gray.700" mb={1}>Email:</Text>
                         <Text color="gray.900">{user.email}</Text>
                     </Box>
-                    <Box mb={6}>
+                    <Box mb={4}>
                         <Text fontWeight="600" color="gray.700" mb={1}>Name:</Text>
                         <Text color="gray.900">{fullName}</Text>
                     </Box>
